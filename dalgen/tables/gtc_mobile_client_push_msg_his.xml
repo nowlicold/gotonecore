@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<table sqlname="gtc_mobile_client_push_msg_his" doname="MobileClientPushMsgHis">
+	<operation name="insert">
+		<sql>
+			insert into gtc_mobile_client_push_msg_his
+			(id,user_id,content,gmt_create,gmt_modified,gmt_next_push,try_count,push_result,status,source_message_id,source_app_name,gmt_his_create,properties)
+			values
+			(?,?,?,?,?,?,?,?,?,?,?,now(),?)
+
+		</sql>
+	</operation>
+	
+	<operation name="selectById">
+		<sql>
+			select
+			id,user_id,content,gmt_create,gmt_modified,gmt_next_push,try_count,push_result,status,source_message_id,source_app_name,gmt_his_create,properties
+			from gtc_mobile_client_push_msg_his where id=?
+		</sql>
+	</operation>
+	
+	<!-- 查询复用参数 -->
+	<extraparams name="searchParameters">
+		<param name="userId" javatype="java.lang.String"/>
+		<param name="content" javatype="java.lang.String"/>
+		<param name="pushResult" javatype="java.lang.String"/>
+		<param name="status" javatype="java.lang.String"/>
+		<param name="sourceMessageId" javatype="java.lang.String"/>
+		<param name="properties" javatype="java.lang.String"/>
+		<param name="gmtMinCreate" javatype="java.util.Date"/>
+		<param name="gmtMaxCreate" javatype="java.util.Date"/>
+		<param name="gmtMinModified" javatype="java.util.Date"/>
+		<param name="gmtMaxModified" javatype="java.util.Date"/>
+		<param name="gmtMinNextPush" javatype="java.util.Date"/>
+		<param name="gmtMaxNextPush" javatype="java.util.Date"/>
+		<param name="gmtMinHisCreate" javatype="java.util.Date"/>
+		<param name="gmtMaxHisCreate" javatype="java.util.Date"/>
+		<param name="tryMinCount" javatype="long"/>
+		<param name="tryMaxCount" javatype="long"/>
+	</extraparams>
+	
+	<!-- 查询复用条件sql -->
+	<sql name="searchWhereSql">
+		<![CDATA[ 
+			 <where>
+			               <if test="userId != null and userId != ''"> 
+							    and user_id=#{userId}
+                            </if>
+						  	<if test="content != null and content != ''">
+			 						and content like CONCAT( '%', #{content}, '%' )
+					 		</if>
+					 		<if test="pushResult != null and pushResult != ''">
+			 						and push_result like CONCAT( '%', #{pushResult}, '%' )
+					 		</if>
+					 		<if test="status != null and status != ''">
+			 						and status=#{status}
+							</if>
+							<if test="sourceMessageId != null and sourceMessageId != ''">
+			 						and source_Message_Id=#{sourceMessageId}
+							</if>
+							<if test="properties != null and properties != ''">
+			 						and properties like CONCAT( '%', #{properties}, '%' )
+					 		</if>
+					 		<if test="gmtMinCreate != null">                              
+							    	and gmt_create  &gt;= #{gmtMinCreate}
+                    		</if>
+                    		<if test="gmtMaxCreate != null">                              
+							    	and gmt_create &lt;= #{gmtMaxCreate}
+                     		</if>
+                     		<if test="gmtMinModified != null">                              
+							    	and gmt_modified  &gt;= #{gmtMinModified}
+                    		</if>
+                    		<if test="gmtMaxModified != null">                              
+							    	and gmt_modified &lt;= #{gmtMaxModified}
+                     		</if>
+                     		<if test="gmtMinNextPush != null">                              
+							    	and gmt_next_push  &gt;= #{gmtMinNextPush}
+                    		</if>
+                    		<if test="gmtMaxNextPush != null">                              
+							    	and gmt_next_push &lt;= #{gmtMaxNextPush}
+                     		</if>
+                     		<if test="gmtMinHisCreate != null">                              
+							    	and gmt_his_create  &gt;= #{gmtMinHisCreate}
+                    		</if>
+                    		<if test="gmtMaxHisCreate != null">                              
+							    	and gmt_his_create &lt;= #{gmtMaxHisCreate}
+                     		</if>
+                     		<if test="tryMinCount != null">                              
+							    	and try_Count  &gt;= #{tryMinCount}
+                    		</if>
+                    		<if test="tryMaxCount != null">                              
+							    	and try_Count &lt;= #{tryMaxCount}
+                     		</if>	
+                     </where>
+		]]>
+	</sql>
+	
+	<operation name="select" multiplicity="many" paging="true">
+		<extraparams>
+			<param ref="searchParameters"/>
+		</extraparams>
+		<sql>
+			select
+			id,user_id,content,gmt_create,gmt_modified,gmt_next_push,try_count,push_result,status,source_message_id,source_app_name,properties,gmt_his_create 
+			from gtc_mobile_client_push_msg_his where 1=0
+		</sql>
+		<sqlmap>
+				<![CDATA[ 
+           	select
+			id,user_id,content,gmt_create,gmt_modified,gmt_next_push,try_count,push_result,status,source_message_id,source_app_name,properties,gmt_his_create 
+			from gtc_mobile_client_push_msg_his
+			<include refid="searchWhereSql"/>
+			order by gmt_create desc
+    			]]>
+		</sqlmap>
+	</operation>
+</table>

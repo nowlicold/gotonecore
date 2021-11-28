@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<table sqlname="gtc_black_list" sequence="seq_gtc_black_list">
+	<operation name="insert" paramtype="object">
+		<sql>
+			<![CDATA[
+				insert into gtc_black_list
+					(id,message_type,receiver,business_type,remark,gmt_create,gmt_modified)
+				values
+					(?,?,?,?,?,now(),now())
+			]]>
+		</sql>
+	</operation>
+	<operation name="getById" paramtype="primitive">
+		<sql>
+			<![CDATA[
+				select
+					id,
+					message_type,
+					receiver,
+					business_type,
+					remark,
+					gmt_create,
+					gmt_modified
+				from gtc_black_list
+				where id = ?
+			]]>
+		</sql>
+	</operation>
+
+	<operation name="findAll" multiplicity="many">
+		<sql>
+			<![CDATA[
+				select
+					id,
+					message_type,
+					receiver,
+					business_type,
+					remark,
+					gmt_create,
+					gmt_modified
+				from gtc_black_list				
+			]]>
+		</sql>
+	</operation>
+
+	<operation name="getByReceiverAndMsgType" paramtype="primitive">
+		<sql>
+			<![CDATA[				
+				select 
+					id,
+					message_type,
+					receiver,
+					business_type,
+					remark,
+					gmt_create,
+					gmt_modified				
+				from gtc_black_list
+				where receiver = ? and message_type = ?  and business_type = ?
+
+			]]>
+		</sql>
+		<sqlmap>
+			<![CDATA[
+				${cdata-start}
+				select
+					id,
+					message_type,
+					receiver,
+					business_type,
+					remark,
+					gmt_create,
+					gmt_modified
+				from gtc_black_list
+				where receiver = #${param1}# and message_type = #${param2}#	
+				${cdata-end}
+				<if test="${param3} != null and ${param3} != ''">
+					and business_type = #{${param3}}
+				</if>
+				<isEmpty prepend="and" property="${param3}">
+					business_type is null
+				</isEmpty>
+			]]>
+		</sqlmap>
+	</operation>
+
+	<operation name="deleteById">
+		<sql>
+			<![CDATA[
+				delete from gtc_black_list where id = ?
+			]]>
+		</sql>
+	</operation>
+
+
+
+	<operation name="findBlackListForPage" paramtype="primitive" multiplicity="many" paging="true">
+		<sql>
+			<![CDATA[
+				select
+					id,message_type,receiver,business_type,remark,gmt_create,gmt_modified
+				from gtc_black_list 
+				where message_type = ?
+				 and receiver like ? 
+				 and business_type like ?
+				 order by receiver
+			]]>
+		</sql>
+		<sqlmap>
+			<![CDATA[
+				${cdata-start}
+				select id,message_type,receiver,business_type,remark,gmt_create,gmt_modified
+					from gtc_black_list 
+				where message_type = #${param1}#				
+				${cdata-end}
+				<if test="${param2} != null and ${param2} != ''">
+					and receiver like CONCAT( '%', #{${param2}}, '%' )
+				</if>
+				<if test="${param3} != null and ${param3} != ''">
+					and business_type like CONCAT( '%', #{${param3}}, '%' )
+				</if>
+				
+				order by receiver,business_type
+			]]>
+		</sqlmap>
+	</operation>
+</table>

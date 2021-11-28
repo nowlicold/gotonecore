@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<table sqlname="gtc_wx_gen_reply_msg_script">
+	<operation name="insert" paramtype="object">
+		<sql> insert into gtc_wx_gen_reply_msg_script (code,name,
+			support_check_script,gen_reply_msg_script,enabled, gmt_modified,
+			gmt_create,support_msg_type) values (?,?,?,
+			?,?,now(),now(),?)
+		</sql>
+	</operation>
+	<operation name="selectAll" multiplicity="many">
+		<sql>
+			select
+			code,name,support_check_script,gen_reply_msg_script,enabled,gmt_modified,gmt_create,support_msg_type
+			from gtc_wx_gen_reply_msg_script
+		</sql>
+	</operation>
+	<operation name="selectByMaxGmtModified" multiplicity="many">
+		<sql>
+		<![CDATA[
+			select
+			code,name,support_check_script,gen_reply_msg_script,enabled,gmt_modified,gmt_create,support_msg_type
+			from gtc_wx_gen_reply_msg_script where
+			gmt_modified > ?
+		]]>
+		</sql>
+	</operation>
+</table>

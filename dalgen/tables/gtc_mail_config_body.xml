@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<table sqlname="gtc_mail_config_body">
+	<column name="mail_content" javatype="java.lang.String"/>
+	<operation name="insert">
+		<sql>
+			insert into gtc_mail_config_body
+			(id, mail_content, gmt_modified,
+			gmt_create)
+			values
+			(?, ?, now(), now())
+		</sql>
+	</operation>
+	<operation name="selectById">
+		<sql>
+			select id, mail_content, gmt_modified,
+			gmt_create from
+			gtc_mail_config_body where id=?
+		</sql>
+	</operation>
+	<operation name="modify">
+		<sql>
+			update gtc_mail_config_body set
+			mail_content=?,gmt_modified=now()
+			where
+			id=?
+		</sql>
+	</operation>
+	<operation name="delete">
+		<sql>
+			delete from gtc_mail_config_body where id=?
+		</sql>
+	</operation>
+</table>

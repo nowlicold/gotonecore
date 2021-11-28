@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE table SYSTEM "http://benchframework.org/schema/dalgen/dalgen-table.dtd"><table sqlname="gtc_sms_black_list">
+    <operation name="insert">
+        <sql>
+            insert into gtc_sms_black_list
+            (id, intercept_object_type, intercept_object_value, memo, gmt_remove, gmt_create, gmt_modified, enabled)
+            values
+            (?, ?, ?, ?, ?, systimestamp, systimestamp, 1)
+        </sql>
+    </operation>
+
+    <operation name="selectEnabledByInterceptTypeAndValue" multiplicity="many">
+        <sql>
+            select id, intercept_object_type, intercept_object_value, memo, gmt_remove, gmt_create, gmt_modified,
+            enabled from gtc_sms_black_list
+            where intercept_object_type = ? and intercept_object_value = ? and enabled = 1
+        </sql>
+    </operation>
+
+    <operation name="updateDisableById">
+        <sql>
+            update gtc_sms_black_list
+            set gmt_modified = systimestamp, enabled = 0
+            where id = ?
+        </sql>
+    </operation>
+
+    <operation name="selectReadyToRemove" multiplicity="many" limitAmount="true">
+        <sql>
+            select id, intercept_object_type, intercept_object_value, memo, gmt_remove, gmt_create, gmt_modified,
+            enabled from gtc_sms_black_list where enabled = 1 order by gmt_remove asc
+        </sql>
+    </operation>
+
+    <operation name="selectEnabledById">
+        <sql>
+            select id, intercept_object_type, intercept_object_value, memo, gmt_remove, gmt_create, gmt_modified,
+            enabled from gtc_sms_black_list where enabled = 1 and id = ?
+        </sql>
+    </operation>
+
+    <operation name="selectByIdForUpdate">
+        <sql>
+            select id, intercept_object_type, intercept_object_value, memo, gmt_remove, gmt_create, gmt_modified,
+            enabled from gtc_sms_black_list where  id = ? for update
+        </sql>
+    </operation>
+</table>

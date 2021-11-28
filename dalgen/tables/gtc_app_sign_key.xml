@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<table sqlname="gtc_app_sign_key" sequence="seq_gtc_app_sign_key">
+	<operation name="insert">
+		<sql>
+			insert into gtc_app_sign_key
+			(id,app_id,key_type,key_value,gmt_create,gmt_modified,enabled)
+			values
+			(?,?,?,?,sysdaste,now(),?)
+		</sql>
+	</operation>
+	<operation name="selectById">
+		<sql>
+			select
+			id,app_id,key_type,key_value,gmt_create,gmt_modified,enabled
+			from
+			gtc_app_sign_key where id=?
+		</sql>
+	</operation> 
+	<operation name="selectAll" multiplicity="many">
+		<sql>
+			select
+			id,app_id,key_type,key_value,gmt_create,gmt_modified,enabled
+			from
+			gtc_app_sign_key
+		</sql>
+	</operation>
+	<operation name="selectByMaxGmtModifed" multiplicity="many">
+		<sql>
+			<![CDATA[
+			select
+			id,app_id,key_type,key_value,gmt_create,gmt_modified,enabled
+			from gtc_app_sign_key where gmt_modified > ?
+			]]>
+		</sql>
+	</operation>
+</table>

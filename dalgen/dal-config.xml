@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tables SYSTEM "http://benchframework.org/schema/dalgen/dalgen-config.dtd">
+<tables>
+	<!-- ========================================================== -->
+	<!-- The typemap("Type Map") maps from one java type to another -->
+	<!-- java type. If you feel the original sql data type to java -->
+	<!-- type mapping is not satisfactory, you can use typemap to -->
+	<!-- convert it to a more appropriate one. -->
+	<!-- ========================================================== -->
+	<tableprefix prefix="gtc" />
+	<include table="tables/gtc_black_list.xml" />
+	<include table="tables/gtc_mail_out.xml" />
+	<include table="tables/gtc_mail_out_history.xml" />
+	<include table="tables/gtc_mail_out_history_body.xml" />
+	<include table="tables/gtc_mail_out_body.xml" />
+	<include table="tables/gtc_mail_config.xml" />
+	<include table="tables/gtc_mail_config_body.xml" />
+	<include table="tables/gtc_mail_server_config.xml" />
+	<include table="tables/gtc_mail_user_config.xml" />
+	<include table="tables/gtc_text_content.xml" />
+	<include table="tables/gtc_mail_send_client.xml" />
+	<include table="tables/gtc_sms_out.xml" />
+	<include table="tables/gtc_sms_config.xml" />
+	<include table="tables/gtc_sms_out_his.xml" />
+	<include table="tables/gtc_activity.xml" />
+	<include table="tables/gtc_activity_mail_user_link.xml" />
+	<include table="tables/gtc_sms_channel_config.xml" />
+	<include table="tables/gtc_sms_config_in_channel.xml" />
+	<include table="tables/gtc_sms_client.xml" />
+	<include table="tables/gtc_sms_client_log.xml" />
+	<include table="tables/gtc_sms_client_send.xml" />
+	<include table="tables/gtc_sms_client_send_history.xml" />
+	<include table="tables/gtc_sms_client_send_log.xml" />
+	<include table="tables/gtc_sms_black_list.xml" />
+
+	<include table="tables/gtc_channel_validate_code.xml" />
+
+	<include table="tables/gtc_app_config.xml" />
+	<include table="tables/gtc_app_sign_key.xml" />
+
+	<include table="tables/gtc_mobile_client_push_msg.xml" />
+	<include table="tables/gtc_mobile_client_setting.xml" />
+	<include table="tables/gtc_mobile_client_push_msg_his.xml" />
+
+	<include table="tables/gtc_wx_gen_reply_msg_script.xml" />
+
+
+</tables>

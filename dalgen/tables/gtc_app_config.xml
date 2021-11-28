@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<table sqlname="gtc_app_config" sequence="seq_gtc_app_config">
+	<operation name="insert">
+		<sql>
+			insert into gtc_app_config
+			(id,app_code,app_name,notify_url,memo,status,properties,gmt_create,gmt_modified)
+			values(?,?,?,?,?,?,?,now(),now())
+		</sql>
+	</operation>
+	<operation name="selectById">
+		<sql>
+			select
+			id,app_code,app_name,notify_url,memo,status,properties,gmt_create,gmt_modified
+			from gtc_app_config where id=?
+		</sql>
+	</operation>
+	<operation name="selectAll" multiplicity="many">
+		<sql>
+			select
+			id,app_code,app_name,notify_url,memo,status,properties,gmt_create,gmt_modified
+			from gtc_app_config
+		</sql>
+	</operation>
+	<operation name="selectByMaxGmtModifed" multiplicity="many">
+		<sql>
+			<![CDATA[
+			select id,app_code,app_name,notify_url,memo,status,properties,gmt_create,gmt_modified from gtc_app_config where gmt_modified > ?
+			]]>
+		</sql>
+	</operation>
+</table>

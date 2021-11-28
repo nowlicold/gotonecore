@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<table sqlname="gtc_sms_client_send" sequence="seq_gtc_sms_client_send">
+	<operation name="insert">
+		<sql>
+			insert into gtc_sms_client_send
+			(id,sms_id,status,gmt_create,gmt_modified,gmt_client_apply,client_no,client_apply_count,gmt_client_send_finish,gmt_client_resend,client_apply_batch_id)
+			values
+			(?,?,?,now(),now(),?,?,?,?,now(),?)
+		</sql>
+	</operation>
+	<operation name="selectById">
+		<sql>
+			select
+			id,sms_id,status,gmt_create,gmt_modified,gmt_client_apply,client_no,client_apply_count,gmt_client_send_finish,gmt_client_resend,client_apply_batch_id
+			from gtc_sms_client_send where id=?
+		</sql>
+	</operation>
+	<operation name="selectByClientApplyBatchId" multiplicity="many">
+		<sql>
+			select
+			id,sms_id,status,gmt_create,gmt_modified,gmt_client_apply,client_no,client_apply_count,gmt_client_send_finish,gmt_client_resend,client_apply_batch_id
+			from gtc_sms_client_send where client_apply_batch_id=?
+		</sql>
+	</operation>
+	<operation name="selectByIdForUpdate">
+		<sql>
+			select
+			id,sms_id,status,gmt_create,gmt_modified,gmt_client_apply,client_no,client_apply_count,gmt_client_send_finish,gmt_client_resend,client_apply_batch_id
+			from gtc_sms_client_send where id=?
+			for update
+			nowait
+		</sql>
+	</operation>
+	<operation name="selectByIdsForUpdate" multiplicity="many">
+		<extraparams>
+			<param name="ids" javatype="java.util.List"/>
+		</extraparams>
+		<sql>
+			select
+			id,sms_id,status,gmt_create,gmt_modified,gmt_client_apply,client_no,client_apply_count,gmt_client_send_finish,gmt_client_resend,client_apply_batch_id
+			from gtc_sms_client_send where 1=0
+		</sql>
+		<sqlmap>
+			<![CDATA[
+			select
+			id,sms_id,status,gmt_create,gmt_modified,gmt_client_apply,client_no,client_apply_count,gmt_client_send_finish,gmt_client_resend,client_apply_batch_id
+			from gtc_sms_client_send where  id in 
+			<foreach open="(" close=")" separator="," collection="ids" item="item">
+			 		#{item}
+			 </foreach> for update
+			]]>
+		</sqlmap>
+	</operation>
+
+	<operation name="selectReadyToSendForUpdate" multiplicity="many">
+		<extraparams>
+			<param name="recordCount" javatype="int"/>
+		</extraparams>
+		<sql>
+			select
+			id,sms_id,status,gmt_create,gmt_modified,gmt_client_apply,client_no,client_apply_count,gmt_client_send_finish,gmt_client_resend,client_apply_batch_id
+			from gtc_sms_client_send where 1=0
+		</sql>
+		<sqlmap>
+				<![CDATA[
+			${cdata-start}
+			select * from (select id,sms_id,status,gmt_create,gmt_modified,gmt_client_apply,client_no,client_apply_count,gmt_client_send_finish,gmt_client_resend,client_apply_batch_id from gtc_sms_client_send where  
+			status in ('READY','RETRY') order by
+			gmt_client_resend asc) t
+			limit 0,${recordCount}
+			 ${cdata-end}
+			]]>
+		</sqlmap>
+	</operation>
+
+	<operation name="search" multiplicity="many" paging="true">
+		<extraparams>
+			<param name="id" javatype="long"/>
+			<param name="smsId" javatype="long"/>
+			<param name="status" javatype="java.lang.String"/>
+			<param name="clientNo" javatype="java.lang.String"/>
+		</extraparams>
+		<sql>
+			select
+			id,sms_id,status,gmt_create,gmt_modified,gmt_client_apply,client_no,client_apply_count,gmt_client_send_finish,gmt_client_resend,client_apply_batch_id
+			from gtc_sms_client_send where 1=0
+		</sql>
+		<sqlmap>
+			<![CDATA[
+			    ${cdata-start}
+					select
+					id,sms_id,status,gmt_create,gmt_modified,gmt_client_apply,client_no,client_apply_count,gmt_client_send_finish,gmt_client_resend,client_apply_batch_id
+					from gtc_sms_client_send
+				${cdata-end}
+				 <where>
+				 	<if test="id == 0">
+	     			    ${cdata-start}
+							 and id=#{id}
+	                    ${cdata-end}
+                    </if>
+                    <if test="smsId == 0">
+	     			    ${cdata-start}
+							 and sms_id=#{smsId}
+	                    ${cdata-end}
+                    </if>
+				 	<if test="status != null and status != ''">
+	     			    ${cdata-start}
+							 and status=#{status}
+	                    ${cdata-end}
+                    </if>
+                    <if test="clientNo != null and clientNo != ''">
+	     			    ${cdata-start}
+							 and client_no=#{clientNo}
+	                    ${cdata-end}
+                    </if> 
+				 </where>
+				 ${cdata-start}
+				 	order by id desc
+				 ${cdata-end}
+			]]>
+		</sqlmap>
+	</operation>
+	<operation name="updateSendRetry">
+		<sql>
+			update gtc_sms_client_send set
+			gmt_modified=now(),status='RETRY',gmt_client_resend=now()
+			where
+			id=?
+		</sql>
+	</operation>
+	<operation name="updateGiveupById">
+		<sql>
+			update gtc_sms_client_send set
+			gmt_modified=now(),status='READY',gmt_client_resend=now(),client_apply_batch_id=0
+			where
+			id=?
+		</sql>
+	</operation>
+	<operation name="deleteById">
+		<sql>
+			delete from gtc_sms_client_send where id=?
+		</sql>
+	</operation>
+	<operation name="updateSendingByIds">
+		<extraparams>
+			<param name="clientNo" javatype="java.lang.String"/>
+			<param name="clientApplyBatchId" javatype="long"/>
+			<param name="ids" javatype="java.util.List"/>
+		</extraparams>
+		<sql>
+			update gtc_sms_client_send set
+			gmt_modified=now() where 1=0
+		</sql>
+		<sqlmap>
+			<![CDATA[
+			update gtc_sms_client_send set
+			gmt_modified=now(),status='SENDING',gmt_client_apply=now(),client_apply_batch_id=#clientApplyBatchId#,client_no=#clientNo#
+			where id in 
+			<foreach open="(" close=")" separator="," collection="ids" item="item">
+			 		#{item}
+			 </foreach>
+			]]>
+		</sqlmap>
+	</operation>
+</table>

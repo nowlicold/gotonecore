@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<table sqlname="gtc_mail_out" sequence="seq_gtc_mail_out">
+	<column name="SEND_TIMES" javaType="int"/>
+	<operation name="insert" paramtype="primitive" multiplicity="many">
+		<sql>
+			<![CDATA[
+				insert into gtc_mail_out(
+					id,receiver,user_id,status,
+					gmt_schedule,gmt_resend,gmt_modified,
+					gmt_create,send_times,MAIL_CONFIG_ID,template_args,
+					MAIL_CC,MAIL_BCC,MAIL_REPLAY_TO,MAIL_SUBJECT,MAIL_FROM,properties,channel,SEND_CLIENT_ID,activity_id,MAIL_BODY_PATTERN
+				)values (
+					?,?,?,?,
+					?,now(),now(),
+					now(),?,?,?,
+					?,?,?,?,?,?,?,?,?,?
+				)
+			]]>
+		</sql>
+	</operation>
+	<!-- 如果处理中（P）状态，加载1分钟内的；I状态大于创建时间1分钟加载；R状态立即加载,按1秒处理5条计算(频率为60s) -->
+	<operation name="selectReadyToSendIds" paramtype="primitive" multiplicity="many">
+		<extraparams>
+			<param name="channel" javatype="java.lang.String"/>
+			<param name="recordCount" javatype="int"/>
+		</extraparams>
+		<sql>
+			<![CDATA[
+				select 
+					id
+				from gtc_mail_out where 1=0
+			]]>
+		</sql>
+		<sqlmap>
+			<![CDATA[
+			${cdata-start}
+			   select * from (
+				select id
+				  from gtc_mail_out
+				 where   channel=#channel# and status in ('R','P','I') and (gmt_resend is null or gmt_resend <=now() ) order by gmt_resend asc
+				   ) t limit 0,${recordCount}
+			${cdata-end}
+			]]>
+		</sqlmap>
+	</operation>
+
+	<!-- 获取可分发的邮件ID -->
+	<operation name="findAssianableMailIdByChannelForUpdate" paramtype="primitive" multiplicity="many">
+		<sql>
+			<![CDATA[
+				select 
+					id
+				from gtc_mail_out where channel=? and gmt_resend <= now()
+			]]>
+		</sql>
+		<sqlmap>
+			<![CDATA[
+			${cdata-start}
+				select id
+				  from gtc_mail_out
+				 where   channel=#${param1}# and status='I'
+				   and limit 0,1000 for update
+			${cdata-end}
+			]]>
+		</sqlmap>
+	</operation>
+
+
+	<!-- 获取已分发给发送客户端的邮件ID -->
+	<operation name="findAssignedMailIdsBySendClientId" paramtype="primitive" multiplicity="many" resultclass="java.util.HashMap">
+		<sql>
+			<![CDATA[
+				select 
+					id,mail_config_id,receiver
+				from gtc_mail_out where send_client_id=? and status='P'
+			]]>
+		</sql>
+		<sqlmap>
+			<![CDATA[
+			${cdata-start}
+				select 
+					id,mail_config_id,receiver
+				from gtc_mail_out where send_client_id=#sendClientId# and status='P'
+				   limit 0,100
+			${cdata-end}
+			]]>
+		</sqlmap>
+	</operation>
+
+
+	<operation name="updateStatusByMailIds" paramtype="primitive">
+		<extraparams>
+			<param name="status" javatype="java.lang.String"/>
+			<param name="mailIdList" javatype="java.util.List"/>
+		</extraparams>
+
+		<sql>
+			<![CDATA[
+				update gtc_mail_out set status='status'
+			]]>
+		</sql>
+		<sqlmap>
+			<![CDATA[
+				update gtc_mail_out set status=#status#,gmt_modified=now() where id in
+				<foreach open="(" close=")" separator="," collection="mailIdList" item="item">
+			 				#{item}
+			    </foreach>
+			]]>
+		</sqlmap>
+	</operation>
+
+	<operation name="updateAssignInfoByIds" paramtype="primitive">
+		<extraparams>
+			<param name="sendClientId" javatype="long"/>
+			<param name="status" javatype="java.lang.String"/>
+			<param name="mailIdList" javatype="java.util.List"/>
+		</extraparams>
+		<sql>
+			<![CDATA[
+				update gtc_mail_out set SEND_CLIENT_ID='sendClientId',gmt_modified=now(),status='status',gmt_resend=now()
+			]]>
+		</sql>
+		<sqlmap>
+			<![CDATA[
+				update gtc_mail_out set SEND_CLIENT_ID=#sendClientId#,gmt_modified=now(),status=#status#,gmt_resend=now() where id in
+				<foreach open="(" close=")" separator="," collection="mailIdList" item="item">
+			 				#{item}
+			    </foreach>
+			]]>
+		</sqlmap>
+
+	</operation>
+
+	<!-- 死亡的发送客户端是否邮件 -->
+	<operation name="unassignMailBySendClientTimeout">
+		<sql>
+			update gtc_mail_out set status='I'
+		</sql>
+		<sqlmap>
+			<![CDATA[
+			${cdata-start}
+				update gtc_mail_out set status='I',send_client_id=0 where send_client_id in
+					(select id from gtc_mail_send_client where status='DEAD' and
+				gmt_modified >= now()-2)
+			 ${cdata-end}
+			]]>
+		</sqlmap>
+	</operation>
+
+
+	<operation name="findMailMsgByIdForUpdate" paramtype="primitive" multiplicity="one">
+		<sql>
+			<![CDATA[
+				select
+					id,receiver,user_id,status,
+					gmt_schedule,gmt_resend,gmt_modified,
+					gmt_create,send_times,MAIL_CONFIG_ID,template_args,
+					MAIL_CC,MAIL_BCC,MAIL_REPLAY_TO,MAIL_SUBJECT,MAIL_FROM,properties,channel,SEND_CLIENT_ID,activity_id
+				from gtc_mail_out where id=? for update
+			]]>
+		</sql>
+		<sqlmap>
+			<![CDATA[
+			${cdata-start}
+			select id,
+				receiver,
+				user_id
+				,template_args,
+				status,
+				gmt_schedule,
+				gmt_resend,
+				gmt_modified,
+				gmt_create,
+				send_times,
+				MAIL_CONFIG_ID, 
+				MAIL_CC,
+				MAIL_BCC,
+				MAIL_REPLAY_TO,
+				MAIL_SUBJECT,
+				MAIL_FROM,properties,channel,SEND_CLIENT_ID ,activity_id,MAIL_BODY_PATTERN
+			from gtc_mail_out
+			where (id = #${param1}#) for update
+			${cdata-end}
+			]]>
+		</sqlmap>
+	</operation>
+
+	<operation name="findMailMsgById" paramtype="primitive" multiplicity="one">
+		<sql>
+			<![CDATA[
+				select
+					id,receiver,user_id,status,
+					gmt_schedule,gmt_resend,gmt_modified,
+					gmt_create,send_times,MAIL_CONFIG_ID,template_args,
+					MAIL_CC,MAIL_BCC,MAIL_REPLAY_TO,MAIL_SUBJECT,MAIL_FROM,properties,channel,SEND_CLIENT_ID ,activity_id,MAIL_BODY_PATTERN
+				from gtc_mail_out where id=?
+			]]>
+		</sql>
+	</operation>
+
+	<operation name="updateSendFailed" paramtype="primitive" multiplicity="many">
+		<sql>
+			<![CDATA[
+				update
+					gtc_mail_out  set status=? , send_times=? ,
+					gmt_modified=now() , gmt_resend=?
+				where id=?
+			]]>
+		</sql>
+	</operation>
+
+	<operation name="deleteMailMsgById" paramtype="primitive" multiplicity="many">
+		<sql> 
+			<![CDATA[
+				delete gtc_mail_out where id=?
+			]]>
+		</sql>
+	</operation>
+
+
+	<operation name="selectSendClientIdById" paramtype="primitive">
+		<sql>
+			<![CDATA[
+				select send_client_id from  gtc_mail_out where id=?
+			]]>
+		</sql>
+	</operation>
+
+
+</table>

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<table sqlname="gtc_mobile_client_setting" sequence="seq_gtc_mobile_client_setting">
+	<operation name="insert">
+		<sql>
+			insert into gtc_mobile_client_setting
+			(id,user_id,login_key,sign_key,login_platform_type,gmt_login,gmt_create,gmt_modified,logined,gmt_logout,notice_key,notice_enabled,gmt_notice_key_update)
+			values
+			(?,?,?,?,?,?,now(),now(),?,?,?,?,?)
+		</sql>
+	</operation>
+	<operation name="selectByUserId">
+		<sql>
+			select
+			id,user_id,login_key,sign_key,login_platform_type,gmt_login,gmt_create,gmt_modified,logined,gmt_logout,notice_key,notice_enabled,gmt_notice_key_update
+			from gtc_mobile_client_setting where user_id=?
+		</sql>
+	</operation>
+	<operation name="selectByNoticeKey" multiplicity="many">
+		<sql>
+			select
+			id,user_id,login_key,sign_key,login_platform_type,gmt_login,gmt_create,gmt_modified,logined,gmt_logout,notice_key,notice_enabled,gmt_notice_key_update
+			from gtc_mobile_client_setting where notice_key=?
+		</sql>
+	</operation>
+	<operation name="updateLoginSuccess">
+		<sql>
+			update gtc_mobile_client_setting set
+			login_key=?,sign_key=?,login_platform_type=?,gmt_login=?,gmt_modified=now(),logined=1,notice_key=?,notice_enabled=?,gmt_notice_key_update=?
+			where user_id=?
+		</sql>
+	</operation>
+	<operation name="updateLogoutSuccess">
+		<sql>
+			update gtc_mobile_client_setting set
+			gmt_modified=now(),logined=0,notice_enabled=?,gmt_logout=?
+			where
+			user_id=?
+		</sql>
+	</operation>
+	<operation name="updateNoticeKey">
+		<sql>
+			update gtc_mobile_client_setting set
+			gmt_modified=now(),notice_key=?,notice_enabled=?,gmt_notice_key_update=?
+			where
+			user_id=?
+		</sql>
+	</operation>
+
+	<operation name="search" multiplicity="many" paging="true">
+		<extraparams>
+			<param name="id" javatype="long"/>
+			<param name="userId" javatype="String"/>
+			<param name="loginKey" javatype="String"/>
+			<param name="signKey" javatype="String"/>
+			<param name="loginPlatformType" javatype="String"/>
+			<param name="gmtLoginStart" javatype="java.util.Date"/>
+			<param name="gmtLoginEnd" javatype="java.util.Date"/>
+			<param name="gmtLogoutStart" javatype="java.util.Date"/>
+			<param name="gmtLogoutEnd" javatype="java.util.Date"/>
+			<param name="gmtCreateStart" javatype="java.util.Date"/>
+			<param name="gmtCreateEnd" javatype="java.util.Date"/>
+			<param name="gmtModifiedStart" javatype="java.util.Date"/>
+			<param name="gmtModifiedEnd" javatype="java.util.Date"/>
+			<param name="noticeKey" javatype="String"/>
+			<param name="noticeEnabled" javatype="java.lang.Boolean"/>
+			<param name="logined" javatype="java.lang.Boolean"/>
+		</extraparams>
+		<sql>
+			select
+			id,user_id,login_key,sign_key,login_platform_type,gmt_login,gmt_create,gmt_modified,logined,gmt_logout,notice_key,notice_enabled,gmt_notice_key_update
+			from gtc_mobile_client_setting where 1=0
+		</sql>
+		<sqlmap>
+			select
+			id,user_id,login_key,sign_key,login_platform_type,gmt_login,gmt_create,gmt_modified,logined,gmt_logout,notice_key,notice_enabled,gmt_notice_key_update
+			from gtc_mobile_client_setting
+			<![CDATA[
+			<where>
+				<if test="id == 0">
+						and id=#{id}
+				</if>
+				<if test="userId != null and userId != ''">
+						and user_id=#{userId}
+				</if>
+				<if test="loginKey != null and loginKey != ''">
+						and login_key=#{loginKey}
+				</if>
+				<if test="signKey != null and signKey != ''">
+						and sign_key=#{signKey}
+				</if>
+				<if test="loginPlatformType != null and loginPlatformType != ''">
+						and login_platform_type=#{loginPlatformType}
+				</if>
+				<if test="noticeKey != null and noticeKey != ''">
+						and notice_key=#{noticeKey}
+				</if>
+				<if test="noticeEnabled != null">
+						and notice_enabled=#{noticeEnabled}
+				</if>
+				<if test="logined != null">
+						and logined=#{logined}
+				</if>
+				
+				<if test="gmtCreateStart != null and gmtCreateStart != ''"> 
+							and gmt_create &gt;=#{gmtCreateStart}
+					</if>
+				<if test="gmtCreateEnd != null and gmtCreateEnd != ''"> 
+							and gmt_create &lt;=#{gmtCreateEnd}
+				</if>
+				<if test="gmtModifiedStart != null and gmtModifiedStart != ''"> 
+							and gmt_modified &gt;=#{gmtModifiedStart}
+					</if>
+				<if test="gmtModifiedEnd != null and gmtModifiedEnd != ''"> 
+							and gmt_modified &lt;=#{gmtModifiedEnd}
+				</if>
+				
+				<if test="gmtLoginStart != null and gmtLoginStart != ''"> 
+							and gmt_login &gt;=#{gmtLoginStart}
+					</if>
+				<if test="gmtLoginEnd != null and gmtLoginEnd != ''"> 
+							and gmt_login &lt;=#{gmtLoginEnd}
+				</if>
+				<if test="gmtLogoutStart != null and gmtLogoutStart != ''"> 
+							and gmt_logout &gt;=#{gmtLogoutStart}
+					</if>
+				<if test="gmtLogoutEnd != null and gmtLogoutEnd != ''"> 
+							and gmt_logout &lt;=#{gmtLogoutEnd}
+				</if>
+			</where>
+			]]>
+			order by gmt_modified desc
+		</sqlmap>
+	</operation>
+	
+	<operation name="selectById">
+		<sql>
+			select
+			id,user_id,login_key,sign_key,login_platform_type,gmt_login,gmt_create,gmt_modified,logined,gmt_logout,notice_key,notice_enabled,gmt_notice_key_update
+			from gtc_mobile_client_setting where id=?
+		</sql>
+	</operation>
+</table>

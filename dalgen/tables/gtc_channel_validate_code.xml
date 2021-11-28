@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<table sqlname="gtc_channel_validate_code" sequence="seq_gtc_channel_validate_code">
+	<operation name="insert" paramtype="object">
+		<sql> insert into gtc_channel_validate_code
+			(id,channel,channel_user_id,channel_user_name,validate_code,gmt_create,
+			gmt_modified,validate_count,gmt_current_validate,gmt_last_validate,success_validated
+			,gmt_validate_create,gmt_validate_success)
+			values
+			(?,?,?,?,?,now(),now(),?,?,?,?,?,?)
+
+		</sql>
+	</operation>
+	<operation name="selectByChannelAndChannelUserId">
+		<sql>
+			select
+			id,channel,channel_user_id,channel_user_name,validate_code,gmt_create,
+			gmt_modified,validate_count,gmt_current_validate,gmt_last_validate,success_validated,gmt_validate_create,gmt_validate_success
+			from
+			gtc_channel_validate_code
+			where channel=? and channel_user_id=?
+		</sql>
+	</operation>
+	<operation name="selectByChannelAndChannelUserName">
+		<sql>
+			select
+			id,channel,channel_user_id,channel_user_name,validate_code,gmt_create,
+			gmt_modified,validate_count,gmt_current_validate,gmt_last_validate,success_validated,gmt_validate_create,gmt_validate_success
+			from
+			gtc_channel_validate_code
+			where channel=? and channel_user_name=?
+		</sql>
+	</operation>
+	<operation name="updateValidateSuccess">
+		<sql>
+			update gtc_channel_validate_code set
+			validate_count=validate_count+1,success_validated=success_validated+1,
+			gmt_last_validate=gmt_current_validate,gmt_current_validate=now(),gmt_modified=now(),gmt_validate_success=now()
+			where id=?
+		</sql>
+	</operation>
+	<operation name="updateReadyToValidate">
+		<sql>
+			update gtc_channel_validate_code set
+			validate_count=0,success_validated=0,gmt_current_validate=null,gmt_modified=now(),gmt_validate_create=now(),gmt_validate_success=null,validate_code=?
+			where id=?
+		</sql>
+	</operation>
+	<operation name="updateValidateFailed">
+		<sql>
+			update gtc_channel_validate_code set
+			validate_count=validate_count+1,gmt_current_validate=null,gmt_modified=now()
+			where id=?
+		</sql>
+	</operation>
+</table>

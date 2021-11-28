@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<table sqlname="gtc_sms_out" sequence="seq_gtc_sms_out">
+	<operation name="insert">
+		<sql>
+			insert into gtc_sms_out
+			(id, receiver, user_id, content, status,
+			gmt_resend,
+			send_times, gmt_modified, gmt_create,
+			sms_config_id,
+			properties,
+			biz_id,
+			ack_code,send_result,send_channel,send_channel_specified,resend_from_id,sms_id,unique_id,template_args,app_code)
+			values
+			(?, ?, ?,
+			?, ?,
+			?, 0,
+			now(),
+			now(),
+			?, ?, ?, ?,?,?,?,?,?,?,?,?)
+		</sql>
+	</operation>
+
+	<operation name="insertBatch">
+		<extraparams>
+			<param name="doList" javatype="java.util.List"/>
+		</extraparams>
+		<sql>
+			update gtc_sms_out set gmt_modified=now()
+			where 1=0
+		</sql>
+		<sqlmap>
+			<![CDATA[
+            insert all
+                <if test="doList != null and !doList.isEmpty()">
+							  and
+                    <foreach collection="doList" item="item">
+                        into gtc_sms_out
+						(id, receiver, user_id, content, status,gmt_resend,send_times, gmt_modified, gmt_create,sms_config_id,properties,biz_id,ack_code,send_result,send_channel,
+						send_channel_specified,resend_from_id,sms_id,unique_id,template_args,app_code)
+                        values
+                        (#doList[].id#,#doList[].receiver#,#doList[].userId#,#doList[].content#,'I',@db@.now(),0,@db@.now(),@db@.now(),#doList[].smsConfigId#,#doList[].properties#,#doList[].bizId#,
+                        #doList[].ackCode#, null,#doList[].sendChannel#,#doList[].sendChannelSpecified#,0,#doList[].smsId#,#doList[].uniqueId#,#doList[].templateArgs#,#doList[].appCode#)
+                    </foreach>
+                    select max(id) from gtc_sms_out
+                </if>
+            ]]>
+		</sqlmap>
+	</operation>
+	<operation name="selectById">
+		<sql>
+			select id, receiver, user_id, content, status,
+			gmt_resend,
+			send_times, gmt_modified, gmt_create,
+			sms_config_id,
+			properties,
+			biz_id,
+			ack_code,send_result,send_channel,send_channel_specified,resend_from_id,sms_id,unique_id,template_args,app_code 
+			from gtc_sms_out
+			where id=?
+		</sql>
+	</operation>
+	<operation name="selectBySmsId">
+		<sql>
+			select id, receiver, user_id, content, status,
+			gmt_resend,
+			send_times, gmt_modified, gmt_create,
+			sms_config_id,
+			properties,
+			biz_id,
+			ack_code,send_result,send_channel,send_channel_specified,resend_from_id,sms_id,unique_id,template_args,app_code 
+			from gtc_sms_out
+			where sms_id=?
+		</sql>
+	</operation>
+	<operation name="selectCountBySmsId">
+		<sql>
+			select count(*)
+			from gtc_sms_out
+			where sms_id=?
+		</sql>
+	</operation>
+	<operation name="selectByIds" multiplicity="many">
+		<extraparams>
+			<param name="ids" javatype="java.util.List"/>
+		</extraparams>
+		<sql>
+			select id, receiver, user_id, content, status,
+			gmt_resend,
+			send_times, gmt_modified, gmt_create,
+			sms_config_id,
+			properties,
+			biz_id,
+			ack_code,send_result,send_channel,send_channel_specified,resend_from_id,sms_id,unique_id,template_args,app_code 
+			from gtc_sms_out
+			where 1=0
+		</sql>
+		<sqlmap>
+			<![CDATA[
+			select id, receiver, user_id, content, status,
+			gmt_resend,
+			send_times, gmt_modified, gmt_create,
+			sms_config_id,
+			properties,
+			biz_id, ack_code,send_result,send_channel,send_channel_specified,resend_from_id,sms_id,unique_id,template_args,app_code from gtc_sms_out where id in 
+			<foreach open="(" close=")" separator="," collection="ids" item="item">
+			 		#{item}
+			</foreach>
+			]]>
+		</sqlmap>
+	</operation>
+	<operation name="selectByIdForUpdate">
+		<sql>
+			select id, receiver, user_id, content, status,
+			gmt_resend,
+			send_times, gmt_modified, gmt_create,
+			sms_config_id,
+			properties,
+			biz_id,
+			ack_code,send_result,send_channel,send_channel_specified,resend_from_id,sms_id,unique_id,template_args,app_code 
+			from gtc_sms_out
+			where id=?
+			for update
+			nowait
+		</sql>
+	</operation>
+
+	<operation name="selectReadyToSendIds" multiplicity="many">
+		<extraparams>
+			<param name="recordCount" javatype="int"/>
+		</extraparams>
+		<sql>
+			select id from gtc_sms_out where 1=0
+		</sql>
+		<sqlmap>
+				<![CDATA[
+			${cdata-start}
+			select * from (select id from gtc_sms_out where  (gmt_resend is null or gmt_resend <=now() ) and
+			(status='I' or status='R') order by
+			gmt_resend asc)
+			limit 0,${recordCount}
+			 ${cdata-end}
+			]]>
+		</sqlmap>
+	</operation>
+
+	<operation name="search" multiplicity="many" paging="true">
+		<extraparams>
+			<param name="receiver" javatype="java.lang.String"/>
+			<param name="userId" javatype="java.lang.String"/>
+			<param name="status" javatype="java.lang.String"/>
+		</extraparams>
+		<sql>
+			select id, receiver, user_id, content, status, gmt_resend,
+			send_times,
+			gmt_modified, gmt_create, sms_config_id, properties,
+			biz_id,
+			ack_code,send_result,send_channel,send_channel_specified,resend_from_id,sms_id,unique_id,template_args,app_code 
+			from gtc_sms_out where
+			1=0
+		</sql>
+		<sqlmap>
+			<![CDATA[
+			    ${cdata-start}
+					select id, receiver, user_id, content, status, gmt_resend, send_times,
+					gmt_modified, gmt_create, sms_config_id, properties, biz_id, ack_code,send_result,send_channel,send_channel_specified,resend_from_id,sms_id,unique_id,template_args,app_code 
+					from gtc_sms_out
+				${cdata-end}
+				 <where>
+				 	<if test="receiver != null and receiver != ''">
+	     			    ${cdata-start}
+							 and receiver=#{receiver}
+	                    ${cdata-end}
+                    </if>
+                    <if test="userId != null and userId != ''">
+	     			    ${cdata-start}
+							 and user_id=#{userId}
+	                    ${cdata-end}
+                    </if>
+                    <if test="status != null and status != ''">
+	     			    ${cdata-start}
+							 and status=#{status}
+	                    ${cdata-end}
+                    </if>
+				 </where>
+				 ${cdata-start}
+				 	order by id desc
+				 ${cdata-end}
+			]]>
+		</sqlmap>
+	</operation>
+
+	<operation name="selectByBizIdSmsConfigIdWithIntervalSeconds">
+		<sql>
+			select id, receiver, user_id, content, status,
+			gmt_resend,
+			send_times, gmt_modified, gmt_create,
+			sms_config_id,
+			properties,
+			biz_id,
+			ack_code,send_result,send_channel,send_channel_specified,resend_from_id,sms_id,unique_id,template_args,app_code 
+			from gtc_sms_out
+			where
+			biz_id=?
+			and
+			sms_config_id=?
+		</sql>
+		<sqlmap>
+			<![CDATA[
+			${cdata-start}
+			select * from (
+			select id, receiver, user_id, content, status,
+			gmt_resend,
+			send_times, gmt_modified, gmt_create,
+			sms_config_id,
+			properties,
+			biz_id, ack_code,send_result,send_channel,send_channel_specified,resend_from_id,sms_id,unique_id,template_args,app_code from gtc_sms_out o where biz_id=#bizId# and sms_config_id=#smsConfigId#
+			      and
+			      gmt_create >=NOW() - (select INTERVAL_SECONDS from
+			      gtc_sms_config where id=o.sms_config_id)/86400  order by gmt_create desc) tmp limit 0,1
+			 ${cdata-end}
+			]]>
+		</sqlmap>
+	</operation>
+
+	<operation name="updateSendFaild">
+		<sql>
+			update gtc_sms_out set
+			gmt_resend=?,gmt_modified=now(),status='R',send_result=?,send_channel=?
+			where
+			id=?
+		</sql>
+		<sqlmap>
+			update gtc_sms_out set
+			gmt_resend=#gmtResend#,gmt_modified=now(),status='R',
+			send_times=send_times+1,send_result=#sendResult#,send_channel=#sendChannel#
+			where
+			id=#id#
+		</sqlmap>
+	</operation>
+	<operation name="updatePrepared">
+		<sql>
+			update gtc_sms_out set
+			gmt_modified=now(),status='P',send_channel=?
+			where
+			id=?
+		</sql>
+	</operation>
+	<operation name="updateSendOverTryCount">
+		<sql>
+			update gtc_sms_out set
+			gmt_resend=now(),gmt_modified=now(),status='O',send_channel=?
+			where id=?
+		</sql>
+		<sqlmap>
+			update gtc_sms_out set gmt_modified=now(),status='O',
+			send_times=send_times+1,send_channel=#sendChannel# where
+			id=#id#
+		</sqlmap>
+	</operation>
+	<operation name="deleteById">
+		<sql>
+			delete gtc_sms_out where id=?
+		</sql>
+	</operation>
+
+</table>

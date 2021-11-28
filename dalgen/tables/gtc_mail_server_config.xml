@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<table sqlname="gtc_mail_server_config" sequence="seq_gtc_mail_server_config">
+	<column name="port" javatype="int"/>
+	<operation name="insert">
+		<sql>
+			insert into gtc_mail_server_config
+			(id, host, port, timeout,
+			connect_timeout,
+			gmt_create, gmt_modified,domain_name)
+			values
+			(?, ?, ?,
+			?, ?,
+			now(), now(),?)
+		</sql>
+	</operation>
+	<operation name="modify">
+		<sql>
+			update gtc_mail_server_config set host=?, port=?, timeout=?,
+			connect_timeout=?, gmt_modified=now(),domain_name=? where
+			id=?
+		</sql>
+	</operation>
+	<operation name="delete">
+		<sql>
+			delete from gtc_mail_server_config where id=?
+		</sql>
+	</operation>
+
+	<operation name="selectAll" multiplicity="many">
+		<sql>
+			select id, host, port, timeout,
+			connect_timeout, gmt_create,
+			gmt_modified,domain_name from gtc_mail_server_config
+		</sql>
+	</operation>
+
+	<operation name="selectById">
+		<sql>
+			select id, host, port, timeout,
+			connect_timeout, gmt_create,
+			gmt_modified,domain_name from gtc_mail_server_config where id=?
+		</sql>
+	</operation>
+
+	<operation name="selectByHostPort">
+		<sql>
+			select id, host, port, timeout,
+			connect_timeout, gmt_create,
+			gmt_modified,domain_name from gtc_mail_server_config where host=? and
+			port=?
+		</sql>
+	</operation>
+
+
+	<operation name="selectMaxGmtModified">
+		<sql>
+			select gmt_modified from gtc_mail_server_config
+		</sql>
+		<sqlmap>
+			select max(GMT_MODIFIED) from gtc_mail_server_config
+		</sqlmap>
+	</operation>
+
+	<operation name="search" multiplicity="many" paging="true">
+		<extraparams>
+			<param name="id" javatype="long"/>
+			<param name="host" javatype="java.lang.String"/>
+			<param name="port" javatype="int"/>
+			<param name="connectTimeout" javatype="long"/>
+			<param name="timeout" javatype="long"/>
+			<param name="domainName" javatype="java.lang.String"/>
+			<param name="beginModifiedDate" javatype="java.lang.String"/>
+			<param name="endModifiedDate" javatype="java.lang.String"/>
+		</extraparams>
+		<sql>
+			select id, host, port, timeout,
+			connect_timeout, gmt_create,
+			gmt_modified,domain_name from gtc_mail_server_config
+		</sql>
+		<sqlmap>
+			<![CDATA[
+			select id, host, port, timeout,
+			connect_timeout, gmt_create,
+			gmt_modified,domain_name from gtc_mail_server_config  
+			<where>
+				<if test="id == 0">
+					and id=#{id}
+                </if>
+                <if test="host != null and host != ''">
+					and host like '%' ||
+					#{host} || '%'
+                </if>
+				<if test="port == 0">
+					and port=#{port}
+                 </if> 
+				<if test="connectTimeout == 0">
+					and connect_timeout=#{connectTimeout}
+                 </if>
+                 <if test="timeout == 0">
+					and timeout=#{timeout}
+                 </if>
+                  <if test="domainName != null and domainName != ''">
+					and host like '%' ||
+					#{domainName} || '%'
+                 </if>
+				<if test="beginModifiedDate != null and beginModifiedDate != ''">
+					${cdata-start}
+					and gmt_modified >= to_date(#{beginModifiedDate},'yyyy-mm-dd
+					HH24:mi:ss')
+					${cdata-end}
+                 </if>
+				<if test="endModifiedDate != null and endModifiedDate != ''">
+					${cdata-start}
+					and gmt_modified <= to_date(#{endModifiedDate},'yyyy-mm-dd HH24:mi:ss')
+					${cdata-end}
+                  </if>
+			</where>
+			]]>
+		</sqlmap>
+	</operation>
+
+</table>

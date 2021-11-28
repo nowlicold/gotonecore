@@ -1,0 +1,8 @@
+<?xml version="1.1" encoding="UTF-8"?>
+<project name="cif.base-dalgen" default="release" basedir="." xmlns:artifact="urn:maven-artifact-ant">
+	<mkdir dir="${java.io.tmpdir}/bench/dalgen/" />
+	<get src="http://benchframework.org/dalgen/ant/common-prepare.xml" dest="${java.io.tmpdir}/bench/dalgen/bench-dalgen-common-prepare.xml" usetimestamp="false" />
+	<get src="http://benchframework.org/dalgen/ant/common-execute.xml" dest="${java.io.tmpdir}/bench/dalgen/bench-dalgen-common-execute.xml" usetimestamp="false" />
+	<import file="${java.io.tmpdir}/bench/dalgen/bench-dalgen-common-prepare.xml" />
+	<import file="${java.io.tmpdir}/bench/dalgen/bench-dalgen-common-execute.xml" />
+</project>

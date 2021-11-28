@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<table sqlname="gtc_sms_out_his" doname="SmsOutHis">
+	<operation name="insert">
+		<sql>
+			insert into gtc_sms_out_his
+			(id, receiver, user_id, content,
+			status, gmt_resend, send_times,
+			gmt_modified, gmt_create,
+			sms_config_id, properties, biz_id,
+			ack_code, gmt_his_create,
+			gmt_send_success,
+			ack_code_validate_count,send_result,send_channel,send_sub_channel,ack_code_validate_try_count,send_channel_specified,resend_from_id,sms_id,unique_id,template_args,app_code)
+			values
+			(?, ?, ?, ?, ?, ?,
+			?,
+			?, ?, ?,
+			?, ?, ?, now(),
+			now(),
+			?,?,?,?,?,?,?,?,?,?,?)
+
+		</sql>
+	</operation>
+	<operation name="selectById">
+		<sql>
+			select id, receiver, user_id, content, status, gmt_resend,
+			send_times,
+			gmt_modified, gmt_create, sms_config_id, properties,
+			biz_id,
+			ack_code, gmt_his_create, gmt_send_success,
+			ack_code_validate_count,send_result,send_channel,send_sub_channel,ack_code_validate_try_count,send_channel_specified,resend_from_id,sms_id,unique_id,template_args,app_code 
+			from
+			gtc_sms_out_his
+			where id=?
+		</sql>
+	</operation>
+	<operation name="selectBySmsId">
+		<sql>
+			select id, receiver, user_id, content, status, gmt_resend,
+			send_times,
+			gmt_modified, gmt_create, sms_config_id, properties,
+			biz_id,
+			ack_code, gmt_his_create, gmt_send_success,
+			ack_code_validate_count,send_result,send_channel,send_sub_channel,ack_code_validate_try_count,send_channel_specified,resend_from_id,sms_id,unique_id,template_args,app_code 
+			from
+			gtc_sms_out_his
+			where sms_id=?
+		</sql>
+	</operation>
+	<operation name="selectByIds" multiplicity="many">
+		<extraparams>
+			<param name="ids" javatype="java.util.List"/>
+		</extraparams>
+		<sql>
+			select id, receiver, user_id, content, status, gmt_resend,
+			send_times,
+			gmt_modified, gmt_create, sms_config_id, properties,
+			biz_id,
+			ack_code, gmt_his_create, gmt_send_success,
+			ack_code_validate_count,send_result,send_channel,send_sub_channel,ack_code_validate_try_count,send_channel_specified,resend_from_id,sms_id,unique_id,template_args,app_code 
+			from
+			gtc_sms_out_his where 1=0
+		</sql>
+		<sqlmap>
+			<![CDATA[
+			select id, receiver, user_id, content, status, gmt_resend,
+			send_times,
+			gmt_modified, gmt_create, sms_config_id, properties,
+			biz_id,
+			ack_code, gmt_his_create, gmt_send_success,
+			ack_code_validate_count,send_result,send_channel,send_sub_channel,ack_code_validate_try_count,send_channel_specified,resend_from_id,sms_id,unique_id,template_args,app_code 
+			from
+			gtc_sms_out_his where id in 
+			<foreach open="(" close=")" separator="," collection="ids" item="item">
+			 		#{item}
+			</foreach>
+			]]>
+		</sqlmap>
+	</operation>
+	<operation name="selectByUserId" multiplicity="many">
+		<sql>
+			select id, receiver, user_id, content, status, gmt_resend,
+			send_times,
+			gmt_modified, gmt_create, sms_config_id, properties,
+			biz_id,
+			ack_code,
+			gmt_his_create, gmt_send_success,
+			ack_code_validate_count,send_result,send_channel,send_sub_channel,ack_code_validate_try_count,send_channel_specified,resend_from_id,sms_id,unique_id,template_args,app_code 
+			from
+			gtc_sms_out_his
+			where user_id=? order by
+			gmt_send_success desc
+		</sql>
+	</operation>
+	<operation name="updateAckCodeValidateSuccess">
+		<sql>
+			update gtc_sms_out_his set
+			gmt_modified
+			=now(),ACK_CODE_VALIDATE_COUNT=ACK_CODE_VALIDATE_COUNT+1,ack_code_validate_try_count=ack_code_validate_try_count+1
+			where
+			id=?
+		</sql>
+	</operation>
+	<operation name="updateAckCodeValidateFailed">
+		<sql>
+			update gtc_sms_out_his set
+			gmt_modified
+			=now(),ack_code_validate_try_count=ack_code_validate_try_count+1
+			where
+			id=?
+		</sql>
+	</operation>
+	<operation name="search" multiplicity="many" paging="true">
+		<extraparams>
+			<param name="receiver" javatype="java.lang.String"/>
+			<param name="userId" javatype="java.lang.String"/>
+			<param name="status" javatype="java.lang.String"/>
+		</extraparams>
+		<sql>
+			select id, receiver, user_id, content, status, gmt_resend,
+			send_times,
+			gmt_modified, gmt_create, sms_config_id, properties,
+			biz_id,
+			ack_code, gmt_his_create, gmt_send_success,
+			ack_code_validate_count,send_result,send_channel,send_sub_channel,ack_code_validate_try_count,send_channel_specified,resend_from_id,sms_id,unique_id,template_args,app_code 
+			from gtc_sms_out_his
+		</sql>
+		<sqlmap>
+		<![CDATA[
+			${cdata-start}
+				select id, receiver, user_id, content, status, gmt_resend, send_times,
+				gmt_modified, gmt_create, sms_config_id, properties, biz_id,
+				ack_code, gmt_his_create, gmt_send_success, ack_code_validate_count,send_result,send_channel,send_sub_channel,ack_code_validate_try_count,send_channel_specified,resend_from_id,sms_id,unique_id,template_args,app_code 
+				from gtc_sms_out_his
+			${cdata-end}
+			<where>
+				<if test="receiver != null and receiver != ''">
+	     			${cdata-start}
+						and receiver=#{receiver}
+	                 ${cdata-end}
+                </if>
+                <if test="userId != null and userId != ''">
+	     			${cdata-start}
+						and user_id=#{userId}
+	                 ${cdata-end}
+                </if>
+                <if test="status != null and status != ''">
+	     			${cdata-start}
+						and status=#{status}
+	                 ${cdata-end}
+                </if>
+			</where>
+			${cdata-start}
+			order by gmt_his_create desc,id desc
+			${cdata-end}
+		]]>
+		</sqlmap>
+	</operation>
+	<operation name="selectValidateableByBizIdSmsConfigIdWithIntervalSeconds">
+		<sql>
+			select id, receiver, user_id, content, status, gmt_resend,
+			send_times,
+			gmt_modified, gmt_create, sms_config_id, properties,
+			biz_id,
+			ack_code, gmt_his_create, gmt_send_success,
+			ack_code_validate_count,send_result,send_channel,send_sub_channel,ack_code_validate_try_count,send_channel_specified,resend_from_id,sms_id,unique_id,template_args,app_code 
+			from
+			gtc_sms_out_his
+			where 1=0 and biz_id=? and
+			sms_config_id=?
+		</sql>
+		<sqlmap>
+		<![CDATA[
+			${cdata-start}
+				select * from (select id, receiver, user_id, content, status, gmt_resend,
+		      send_times,
+		      gmt_modified, gmt_create, sms_config_id, properties,
+		      biz_id,
+		      ack_code, gmt_his_create, gmt_send_success,
+		      ack_code_validate_count,send_result,send_channel,send_sub_channel,ack_code_validate_try_count,send_channel_specified,resend_from_id,sms_id,unique_id,template_args,app_code from
+		      gtc_sms_out_his o where  status in ('I','S') and biz_id=#bizId# and
+		    sms_config_id=#smsConfigId# and (ack_code_validate_count=0 and ack_code_validate_try_count < (select max_try_count from  gtc_sms_config where id=o.sms_config_id))
+		    and
+		    gmt_create >=now() - (select INTERVAL_SECONDS  from
+		    gtc_sms_config where id=o.sms_config_id)/86400
+		      order by gmt_create desc ) tmp limit 0,1
+		 ${cdata-end}
+			]]>
+		</sqlmap>
+	</operation>
+	<operation name="selectByBizIdSmsConfigIdWithIntervalSeconds">
+		<sql>
+			select id, receiver, user_id, content, status, gmt_resend,
+			send_times,
+			gmt_modified, gmt_create, sms_config_id, properties,
+			biz_id,
+			ack_code, gmt_his_create, gmt_send_success,
+			ack_code_validate_count,send_result,send_channel,send_sub_channel,ack_code_validate_try_count,send_channel_specified,resend_from_id,sms_id,unique_id,template_args,app_code 
+			from
+			gtc_sms_out_his
+			where 1=0 and biz_id=? and
+			sms_config_id=?
+		</sql>
+		<sqlmap>
+		<![CDATA[
+			${cdata-start}
+				select * from (select id, receiver, user_id, content, status, gmt_resend,
+		      send_times,
+		      gmt_modified, gmt_create, sms_config_id, properties,
+		      biz_id,
+		      ack_code, gmt_his_create, gmt_send_success,
+		      ack_code_validate_count,send_result,send_channel,send_sub_channel,ack_code_validate_try_count,send_channel_specified,resend_from_id,sms_id,unique_id,template_args,app_code from
+		      gtc_sms_out_his o where  status in ('I','S') and biz_id=#bizId# and
+		    sms_config_id=#smsConfigId#  and
+		    gmt_create >=now() - (select INTERVAL_SECONDS  from
+		    gtc_sms_config where id=o.sms_config_id)/86400
+		      order by gmt_create desc ) tmp limit 0,1
+		 ${cdata-end}
+			]]>
+		</sqlmap>
+	</operation>
+</table>

@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Bench-Component-Description: this file is auto generated,do not modify!!
+ !!!!
+Bench-Component-Name: com.bench.app.cif.base.dalgen
+

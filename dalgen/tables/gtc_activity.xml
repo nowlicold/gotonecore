@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<table sqlname="gtc_activity" sequence="seq_gtc_activity">
+	<operation name="insert" paramtype="object">
+		<sql> insert into gtc_activity
+			(id, activity_name, gmt_create,
+			gmt_modified, memo,activity_status,activity_code)
+			values
+			(?, ?,
+			now(), now(),
+			?,?,?)
+		</sql>
+	</operation>
+	<operation name="getById">
+		<sql>
+			select id, activity_name, gmt_create,
+			gmt_modified,
+			memo,activity_status,activity_code
+			from
+			gtc_activity
+			where id = ?
+		</sql>
+	</operation>
+	<operation name="selectAll" multiplicity="many">
+		<sql>
+			select id, activity_name, gmt_create,
+			gmt_modified,
+			memo,activity_status,activity_code
+			from
+			gtc_activity 
+		</sql>
+	</operation>
+	<operation name="getByActivityCode">
+		<sql>
+			select id, activity_name, gmt_create,
+			gmt_modified,
+			memo,activity_status,activity_code
+			from
+			gtc_activity
+			where activity_code= ?
+		</sql>
+	</operation>
+	<operation name="modify" paramtype="object">
+		<sql>
+			update gtc_activity set
+			activity_name=?,memo=?,activity_status=?,gmt_modified=now(),activity_code=?
+			where
+			id=?
+		</sql>
+	</operation>
+	
+	<operation name="selectGreaterThanModifiedDate" multiplicity="many">
+		<sql>
+			select id, activity_name, gmt_create,
+			gmt_modified,
+			memo,activity_status,activity_code from gtc_activity where
+			gmt_modified =?
+		</sql>
+		<sqlmap>
+			<![CDATA[
+			${cdata-start}
+			select id, activity_name, gmt_create,
+			gmt_modified,
+			memo,activity_status,activity_code from gtc_activity where
+			gmt_modified >= #gmtModified#
+			${cdata-end}
+			]]>
+		</sqlmap>
+	</operation>
+ 
+	<operation name="selectMaxGmtModified">
+		<sql>
+			select gmt_modified from gtc_activity
+		</sql>
+		<sqlmap>
+			select max(GMT_MODIFIED) from gtc_activity
+		</sqlmap>
+	</operation>
+	
+	
+	<operation name="search" paging="true" multiplicity="many">
+		<extraparams>
+			<param name="activityName" javatype="java.lang.String"/>
+			<param name="activityCode" javatype="java.lang.String"/>
+			<param name="activityStatus" javatype="java.lang.String"/>
+			<param name="gmtModifiedBegin" javatype="java.lang.String"/>
+			<param name="gmtModifiedEnd" javatype="java.lang.String"/>
+		</extraparams>
+		<sql>
+			select id, activity_name, gmt_create,
+			gmt_modified,
+			memo,activity_status,activity_code
+			from
+			gtc_activity where 1=0
+		</sql>
+		<sqlmap>
+			<![CDATA[
+			select id, activity_name, gmt_create,
+			gmt_modified,
+			memo,activity_status,activity_code
+			from
+			gtc_activity
+			<where>
+				<if test="activityName != null and activityName != ''">
+						and activity_name like '%' || #{activityName} || '%'
+				</if>
+				<if test="activityCode != null and activityCode != ''">
+						and activity_code like '%' || #{activityCode} || '%'
+				</if>
+				<if test="activityStatus != null and activityStatus != ''">
+						and activity_status=#{activityStatus}
+				</if>
+				<if test="gmtModifiedBegin != null and gmtModifiedBegin != ''">
+					${cdata-start}
+					and gmt_modified>=to_date(#{gmtModifiedBegin},'yyyy-mm-dd HH24:mi:ss')
+					${cdata-end}
+				</if>
+				<if test="gmtModifiedEnd != null and gmtModifiedEnd != ''">
+					${cdata-start}
+					and gmt_modified<=to_date(#{gmtModifiedEnd},'yyyy-mm-dd HH24:mi:ss')
+					${cdata-end}
+				</if>
+			</where>
+			]]>
+		</sqlmap>
+	</operation>
+</table>

@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<table sqlname="gtc_mail_user_config" sequence="seq_gtc_mail_user_config">
+	<column name="serverside_enabled" javatype="boolean"/>
+	<operation name="insert">
+		<sql>
+			insert into gtc_mail_user_config
+			(id, password, from_addr,
+			mail_server_id, from_name,
+			user_type,status,serverside_enabled,serverside_disabled_reason,gmt_modified,
+			gmt_create)
+			values
+			(?, ?,
+			?, ?,
+			?,?,?,?,?,
+			now(), now())
+		</sql>
+	</operation>
+	<operation name="modify">
+		<sql>
+			update gtc_mail_user_config set password=?,
+			from_addr=?,mail_server_id=?,from_name=?,user_type=?,status=?,serverside_enabled=?,serverside_disabled_reason=?,gmt_modified=now()
+			where
+			id=?
+		</sql>
+	</operation>
+	<operation name="modifyStatus">
+		<sql>
+			update gtc_mail_user_config set
+			status=?,gmt_modified=now()
+			where
+			id=?
+		</sql>
+	</operation>
+	<operation name="delete">
+		<sql>
+			delete from gtc_mail_user_config where id=?
+		</sql>
+	</operation>
+	<operation name="selectCountByFromAddAndMailServerId">
+		<sql>
+			select count(*) from gtc_mail_user_config where mail_server_id=?
+			and from_addr=? and status='ENABLED'
+		</sql>
+	</operation>
+	<operation name="selectAll" multiplicity="many">
+		<sql>
+			select id, password, from_addr,
+			mail_server_id, from_name,
+			user_type,status,serverside_enabled,serverside_disabled_reason,
+			gmt_modified,from_userword,
+			gmt_create from gtc_mail_user_config
+		</sql>
+	</operation>
+
+	<operation name="selectById">
+		<sql>
+			select id, password, from_addr,
+			mail_server_id,
+			from_name,user_type,status,serverside_enabled,serverside_disabled_reason,
+			gmt_modified,from_userword,
+			gmt_create from gtc_mail_user_config where id=?
+		</sql>
+	</operation>
+
+
+	<operation name="selectMaxGmtModified">
+		<sql>
+			select max(GMT_MODIFIED) from gtc_mail_user_config
+		</sql>
+	</operation>
+	<operation name="selectCount">
+		<sql>
+			select count(*) from gtc_mail_user_config
+		</sql>
+	</operation>
+
+
+	<operation name="search" multiplicity="many" paging="true">
+		<extraparams>
+			<param name="id" javatype="long"/>
+			<param name="fromAddr" javatype="java.lang.String"/>
+			<param name="password" javatype="java.lang.String"/>
+			<param name="mailServerId" javatype="long"/>
+			<param name="fromName" javatype="java.lang.String"/>
+			<param name="status" javatype="java.lang.String"/>
+			<param name="userType" javatype="java.lang.String"/>
+			<param name="serversideEnabled" javatype="java.lang.Boolean"/>
+			<param name="beginModifiedDate" javatype="java.lang.String"/>
+			<param name="endModifiedDate" javatype="java.lang.String"/>
+		</extraparams>
+		<sql>
+			select id, password, from_addr,
+			mail_server_id,
+			from_name,user_type,status,serverside_enabled,serverside_disabled_reason,
+			gmt_modified,
+			gmt_create from gtc_mail_user_config
+		</sql>
+		<sqlmap>
+			<![CDATA[
+			select id, password, from_addr,
+			mail_server_id, from_name,user_type,status,serverside_enabled,serverside_disabled_reason,
+			gmt_modified,
+			gmt_create from gtc_mail_user_config
+			<where>
+				<if test="id == 0">
+					and id=#{id}
+                 </if>
+				<if test="fromAddr != null and fromAddr != ''">
+					and from_addr like '%' ||
+					#{fromAddr} || '%'
+                </if>
+				<if test="password != null and password != ''">
+					and password = #{password}
+                </if>
+				<if test="mailServerId == 0">
+					and mail_server_id =#{mailServerId}
+                </if>
+                <if test="fromName != null and fromName != ''">
+					and from_name like '%' ||
+					#{fromName} || '%'
+                </if>
+                <if test="status != null and status != ''">
+					and status =#{status}
+                </if>
+                 <if test="userType != null and userType != ''">
+					and user_type =#{userType}
+                </if>
+                 <if test="serversideEnabled != null">
+					and serverside_enabled =#{serversideEnabled}
+                </if>
+				<if test="beginModifiedDate != null and beginModifiedDate != ''">
+					${cdata-start}
+					and gmt_modified >= to_date(#{beginModifiedDate},'yyyy-mm-dd
+					HH24:mi:ss')
+					${cdata-end}
+                 </if>
+				<if test="endModifiedDate != null and endModifiedDate != ''">
+					${cdata-start}
+					and gmt_modified <= to_date(#{endModifiedDate},'yyyy-mm-dd HH24:mi:ss')
+					${cdata-end}
+                  </if>
+			</where>
+			]]>
+		</sqlmap>
+	</operation>
+	<operation name="selectRandomByActivityIdAndDomainName">
+		<extraparams>
+			<param name="activityId" javatype="long"/>
+			<param name="serverDomainName" javatype="java.lang.String"/>
+		</extraparams>
+		<sql>
+			select id, password, from_addr,
+			mail_server_id,
+			from_name,user_type,status,serverside_enabled,serverside_disabled_reason,
+			gmt_modified,
+			gmt_create from gtc_mail_user_config where 1=0
+		</sql>
+		<sqlmap>
+			select id, password, from_addr,
+			mail_server_id,
+			from_name,user_type,status,serverside_enabled,serverside_disabled_reason,
+			gmt_modified,from_userword,
+			gmt_create from gtc_mail_user_config where id = ( select
+			id from (select uc.id
+			from gtc_mail_user_config uc,gtc_mail_server_config sc
+			,gtc_activity_mail_user_link l
+			where uc.mail_server_id=sc.id and uc.id=l.mail_user_id and
+			l.activity_id=#activityId# and sc.domain_name=#serverDomainName# and l.enabled='1'
+			order by
+			dbms_random.value())  limit 0,1)
+		</sqlmap>
+	</operation>
+	<operation name="selectRandomByActivityId">
+		<extraparams>
+			<param name="activityId" javatype="long"/>
+		</extraparams>
+		<sql>
+			select id, password, from_addr,
+			mail_server_id,
+			from_name,user_type,status,serverside_enabled,serverside_disabled_reason,
+			gmt_modified,
+			gmt_create,from_userword from gtc_mail_user_config where 1=0
+		</sql>
+		<sqlmap>
+			select id,
+			password,
+			from_addr,
+			mail_server_id,
+			from_name,
+			user_type,
+			status,
+			serverside_enabled,
+			serverside_disabled_reason,
+			gmt_modified,
+			gmt_create,from_userword
+			from gtc_mail_user_config 
+			where id in (select mail_user_id
+			from (select mail_user_id
+			from gtc_activity_mail_user_link
+			where activity_id = #activityId# and enabled='1'
+			order by dbms_random.value())
+			limit 0,1)
+		</sqlmap>
+	</operation>
+</table>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<table sqlname="gtc_sms_client" sequence="seq_gtc_sms_client">
+	<operation name="insert">
+		<sql>
+			insert into gtc_sms_client
+			(id,client_no,login_password,gmt_create,gmt_modified,enabled,
+			sign_key,apply_each_count,apply_max_pool_size,sign_type)
+			values
+			(?,?,?,now(),now(),?,?,?,?,?)
+		</sql>
+	</operation>
+	<operation name="selectById">
+		<sql>
+			select
+			id,client_no,login_password,gmt_create,gmt_modified,enabled,
+			sign_key,apply_each_count,apply_max_pool_size,sign_type
+			from gtc_sms_client where
+			id=?
+		</sql>
+	</operation>
+	<operation name="selectByClientNo">
+		<sql>
+			select
+			id,client_no,login_password,gmt_create,gmt_modified,enabled,
+			sign_key,apply_each_count,apply_max_pool_size,sign_type
+			from gtc_sms_client where
+			client_no=?
+		</sql>
+	</operation>
+
+	<operation name="search" multiplicity="many" paging="true">
+		<extraparams>
+			<param name="id" javatype="long"/>
+			<param name="clientNo" javatype="java.lang.String"/>
+			<param name="enabled" javatype="java.lang.Boolean"/>
+		</extraparams>
+		<sql>
+			select
+			id,client_no,login_password,gmt_create,gmt_modified,enabled,
+			sign_key,apply_each_count,apply_max_pool_size,sign_type
+			from gtc_sms_client where
+			1=0
+		</sql>
+		<sqlmap>
+			<![CDATA[
+			    ${cdata-start}
+					select
+					id,client_no,login_password,gmt_create,gmt_modified,enabled,
+					sign_key,apply_each_count,apply_max_pool_size,sign_type
+					from gtc_sms_client
+				${cdata-end}
+				 <where>
+				 	<if test="id == 0">
+	     			    ${cdata-start}
+							 and id=#{id}
+	                    ${cdata-end}
+                    </if> 
+				 	<if test="clientNo != null and clientNo != ''">
+	     			    ${cdata-start}
+							 and client_no=#{clientNo}
+	                    ${cdata-end}
+                    </if>
+                    <if test="enabled != null">
+	     			    ${cdata-start}
+							 and enabled=#{enabled}
+	                    ${cdata-end}
+                    </if> 
+				 </where>
+				 ${cdata-start}
+				 	order by id desc
+				 ${cdata-end}
+			]]>
+		</sqlmap>
+	</operation>
+</table>

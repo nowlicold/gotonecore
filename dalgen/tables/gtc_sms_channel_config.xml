@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<table sqlname="gtc_sms_channel_config">
+	<operation name="insert">
+		<sql>insert into gtc_sms_channel_config
+			( channel_name,
+			support_cell_prefix, content_append_prefix,content_append_suffix,
+			gmt_create,
+			gmt_modified,weight,enabled,run_mode,properties)
+			values
+			(?,?,?,?,now(),now(),?,?,?,?)
+		</sql>
+	</operation>
+	<operation name="selectAll" multiplicity="many">
+		<sql>
+			select channel_name,
+			support_cell_prefix,
+			content_append_prefix,
+			content_append_suffix, gmt_create,
+			gmt_modified,weight,enabled,run_mode,properties
+			from
+			gtc_sms_channel_config
+		</sql>
+	</operation>
+	<operation name="selectMaxGmtModified">
+		<sql>
+			select gmt_modified from gtc_sms_channel_config
+		</sql>
+		<sqlmap>
+			select max(GMT_MODIFIED) from gtc_sms_channel_config
+		</sqlmap>
+	</operation>
+	<operation name="selectGreaterThanModifiedDate" multiplicity="many">
+		<sql>
+			select channel_name,
+			support_cell_prefix,
+			content_append_prefix,
+			content_append_suffix, gmt_create,
+			gmt_modified,weight,enabled,run_mode,properties
+			from
+			gtc_sms_channel_config where
+			gmt_modified=?
+		</sql>
+		<sqlmap>
+			<![CDATA[
+			${cdata-start}
+			select  channel_name,
+			support_cell_prefix,
+			content_append_prefix,
+			content_append_suffix, gmt_create,
+			gmt_modified,weight,enabled,run_mode,properties from
+			gtc_sms_channel_config where
+			gmt_modified >= #gmtModified#
+			${cdata-end}
+			]]>
+		</sqlmap>
+	</operation>
+</table>

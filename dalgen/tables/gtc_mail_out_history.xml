@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<table sqlname="gtc_mail_out_history" dummypk="id">
+	<column name="SEND_TIMES" javaType="int"/>
+	<operation name="insert" paramtype="primitive" multiplicity="many">
+		<sql>
+			<![CDATA[
+				insert into gtc_mail_out_history(
+					id,receiver,user_id,status,
+					gmt_schedule,gmt_modified,
+					gmt_create,gmt_mail_msg_create,
+					MAIL_CC,MAIL_BCC,MAIL_REPLAY_TO,MAIL_SUBJECT,MAIL_FROM,properties,
+					mail_config_id,template_args,channel,SEND_CLIENT_ID,activity_id,SEND_TIMES,MAIL_USER_CONFIG_ID,MAIL_BODY_PATTERN
+				)values (?,?,?,?,
+					?,now(),
+					now(),?,
+					?,?,?,?,?,?,
+					?,?,?,?,?,?,?,?
+				)
+			]]>
+		</sql>
+	</operation>
+	<operation name="selectChannelById">
+		<sql>
+			<![CDATA[
+				select channel from gtc_mail_out_history where id=?
+			]]>
+		</sql>
+	</operation>
+
+</table>

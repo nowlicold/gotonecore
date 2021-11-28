@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<table sqlname="gtc_sms_config" sequence="seq_gtc_sms_config">
+	<operation name="insert">
+		<sql>
+			insert into gtc_sms_config
+			(id,config_name, gmt_modified,
+			gmt_create,
+			content, send_channels, interval_seconds,
+			ack_code_timeout_seconds,
+			ack_code_max_validate,send_start_time,send_end_time,max_try_count,retry_interval_seconds,sms_out_need_unique_id)
+			values
+			(?,?,
+			now(), now(), ?, ?,
+			?, ?,
+			?,?,?,?,?,?)
+
+		</sql>
+	</operation>
+	<operation name="modify">
+		<sql>
+			update gtc_sms_config set config_name=?, gmt_modified=now(),
+			content=?,
+			send_channels=?,
+			interval_seconds=?,ACK_CODE_TIMEOUT_SECONDS=?,ACK_CODE_MAX_VALIDATE=?,send_start_time=?,send_end_time=?,max_try_count=?,retry_interval_seconds=?
+			where id=?
+		</sql>
+	</operation>
+	<operation name="selectById">
+		<sql>
+			select id,config_name, gmt_modified, gmt_create, content,
+			send_channels,
+			interval_seconds,ACK_CODE_TIMEOUT_SECONDS,ACK_CODE_MAX_VALIDATE,send_start_time,send_end_time,max_try_count,retry_interval_seconds,sms_out_need_unique_id
+			from
+			gtc_sms_config where id=?
+		</sql>
+	</operation>
+	<operation name="selectByConfigName">
+		<sql>
+			select id,config_name, gmt_modified, gmt_create, content,
+			send_channels,
+			interval_seconds,ACK_CODE_TIMEOUT_SECONDS,ACK_CODE_MAX_VALIDATE,send_start_time,send_end_time,max_try_count,retry_interval_seconds,sms_out_need_unique_id
+			from
+			gtc_sms_config where config_name=?
+		</sql>
+	</operation>
+
+	<operation name="search" paging="true" multiplicity="many">
+		<extraparams>
+			<param name="id" javatype="long"/>
+			<param name="content" javatype="java.lang.String"/>
+			<param name="configName" javatype="java.lang.String"/>
+			<param name="sendChannel" javatype="java.lang.String"/>
+			<param name="gmtModifiedBegin" javatype="java.lang.String"/>
+			<param name="gmtModifiedEnd" javatype="java.lang.String"/>
+		</extraparams>
+		<sql>
+			select id,config_name, gmt_modified, gmt_create, content,
+			send_channels,
+			interval_seconds,ACK_CODE_TIMEOUT_SECONDS,ACK_CODE_MAX_VALIDATE,send_start_time,send_end_time,max_try_count,retry_interval_seconds,sms_out_need_unique_id
+			from
+			gtc_sms_config where 1=0
+		</sql>
+		<sqlmap>
+			<![CDATA[select id,config_name, gmt_modified, gmt_create, content,
+			send_channels,
+			interval_seconds,ACK_CODE_TIMEOUT_SECONDS,ACK_CODE_MAX_VALIDATE,send_start_time,send_end_time,max_try_count,retry_interval_seconds,sms_out_need_unique_id from
+			gtc_sms_config 
+			<where>
+				<if test="id == 0">
+					and id=#{id}
+                 </if>
+				<if test="content != null and content != ''">
+						and content like '%' || #activityName# || '%'
+				</if>
+				<if test="configName != null and configName != ''">
+						and config_name=#{configName}
+				</if>
+				<if test="sendChannel != null and sendChannel != ''">
+						and send_channels like CONCAT( '%', #{sendChannel}, '%' )
+				</if>
+				<if test="gmtModifiedBegin != null and gmtModifiedBegin != ''">
+					${cdata-start}
+					and gmt_modified>=to_date(#{gmtModifiedBegin},'yyyy-mm-dd HH24:mi:ss')
+					${cdata-end}
+				</if>
+				<if test="gmtModifiedEnd != null and gmtModifiedEnd != ''">
+					${cdata-start}
+					and gmt_modified<=to_date(#{gmtModifiedEnd},'yyyy-mm-dd HH24:mi:ss')
+					${cdata-end}
+				</if>
+			</where>
+			order by gmt_create desc
+			]]>
+		</sqlmap>
+	</operation>
+	<operation name="selectAll" multiplicity="many">
+		<sql>
+			select id,config_name, gmt_modified, gmt_create, content,
+			send_channels,
+			interval_seconds,ACK_CODE_TIMEOUT_SECONDS,ACK_CODE_MAX_VALIDATE,send_start_time,send_end_time,max_try_count,retry_interval_seconds,sms_out_need_unique_id
+			from
+			gtc_sms_config
+		</sql>
+	</operation>
+	<operation name="selectMaxGmtModified">
+		<sql>
+			select gmt_modified from gtc_sms_config
+		</sql>
+		<sqlmap>
+			select max(GMT_MODIFIED) from gtc_sms_config
+		</sqlmap>
+	</operation>
+	<operation name="selectGreaterThanModifiedDate" multiplicity="many">
+		<sql>
+			select id,config_name, gmt_modified, gmt_create, content,
+			send_channels,
+			interval_seconds,ACK_CODE_TIMEOUT_SECONDS,ACK_CODE_MAX_VALIDATE,send_start_time,send_end_time,max_try_count,retry_interval_seconds,sms_out_need_unique_id
+			from
+			gtc_sms_config where
+			gmt_modified=?
+		</sql>
+		<sqlmap>
+			<![CDATA[
+			${cdata-start}
+			select   id,config_name, gmt_modified, gmt_create, content,
+			send_channels,
+			interval_seconds,ACK_CODE_TIMEOUT_SECONDS,ACK_CODE_MAX_VALIDATE,send_start_time,send_end_time,max_try_count,retry_interval_seconds,sms_out_need_unique_id from gtc_sms_config where
+			gmt_modified >= #gmtModified#
+			${cdata-end}
+			]]>
+		</sqlmap>
+	</operation>
+	
+	<operation name="updateSendChannelsByIds">
+		<extraparams>
+			<param name="ids" javatype="java.util.List"/>
+			<param name="sendChannels" javatype="java.lang.String"/>
+		</extraparams>
+		<sql>
+			update gtc_sms_config 
+				set  gmt_modified=now()
+			where 1=0 
+		</sql>
+		<sqlmap>
+			<![CDATA[
+				update gtc_sms_config 
+				set send_channels =#sendChannels# , gmt_modified=now()
+				where id in 
+				<foreach open="(" close=")" separator="," collection="ids" item="item">
+			 				#{item}
+			    </foreach>
+			]]>
+		</sqlmap>
+	</operation>
+	
+	<operation name="updateById">
+		<sql>
+			update gtc_sms_config 
+			set 
+			content=?,send_channels=?,interval_seconds=?,ack_code_timeout_seconds=?,ack_code_max_validate=?,
+			send_start_time=?,send_end_time=?,max_try_count=?,retry_interval_seconds=?,sms_out_need_unique_id=?,gmt_modified=now()
+			where id=?
+		</sql>
+	</operation>
+	
+</table>

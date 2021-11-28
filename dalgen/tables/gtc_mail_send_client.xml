@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<table sqlname="gtc_mail_send_client" sequence="seq_gtc_mail_send_client">
+	<operation name="insert">
+		<sql>
+			insert into gtc_mail_send_client
+			(id, client_id, gmt_create,
+			gmt_modified, client_ip,client_host, gmt_live,
+			current_amount, status)
+			values
+			(?, ?,
+			now(), now(), ?,?,now(),
+			?, ?)
+		</sql>
+	</operation>
+	<operation name="selectByClientId">
+		<sql>
+			select id, client_id, gmt_create, gmt_modified, client_ip,
+			gmt_live,
+			current_amount,status,client_host from gtc_mail_send_client
+			where
+			client_id=?
+		</sql>
+	</operation>
+	<operation name="updateStatusGmtLiveByClientId">
+		<sql>
+			update gtc_mail_send_client set
+			gmt_modified=now(),status=?,gmt_live=now()
+			where client_id=?
+		</sql>
+	</operation>
+	<operation name="addCurrentAmountById">
+		<extraparams>
+			<param name="addCurrentAmount" javatype="long"/>
+			<param name="id" javatype="long"/>
+		</extraparams>
+		<sql>
+			update gtc_mail_send_client set
+			gmt_modified=now(),current_amount='addCurrentAmount' where id='id'
+		</sql>
+		<sqlmap>
+			update gtc_mail_send_client set
+			gmt_modified=now(),current_amount=current_amount+#addCurrentAmount#
+			where id=#id#
+		</sqlmap>
+	</operation>
+	<operation name="subtractCurrentAmountById">
+		<extraparams>
+			<param name="subtractCurrentAmount" javatype="long"/>
+			<param name="id" javatype="long"/>
+		</extraparams>
+		<sql>
+			update gtc_mail_send_client set
+			gmt_modified=now(),current_amount='subtractCurrentAmount' where
+			id='id'
+		</sql>
+		<sqlmap>
+			update gtc_mail_send_client set
+			gmt_modified=now(),current_amount=current_amount-#subtractCurrentAmount#
+			where id=#id#
+		</sqlmap>
+	</operation>
+	<operation name="updateCurrentAmountByMailTimeout">
+		<sql>
+			update gtc_mail_send_client set current_amount=1
+		</sql>
+		<sqlmap>
+			<![CDATA[
+			update gtc_mail_send_client c set c.current_amount=c.current_amount -(
+			select count(*) from gtc_mail_out where send_client_id in
+			(select id from gtc_mail_send_client c2 where c2.status='DEAD' and
+			c2.gmt_modified &gt;= now()-2 and c.id=c2.id)
+			) 
+			]]>
+		</sqlmap>
+
+	</operation>
+	<operation name="updateStatusByClientId">
+		<sql>
+			update gtc_mail_send_client set
+			gmt_modified=now(),status=?
+			where
+			client_id=?
+		</sql>
+	</operation>
+
+	<operation name="selectStatusByClientId">
+		<sql>
+			select status from gtc_mail_send_client
+			where
+			client_id=?
+		</sql>
+	</operation>
+
+	<operation name="selectIdByClientId">
+		<sql>
+			select id from gtc_mail_send_client
+			where
+			client_id=?
+		</sql>
+	</operation>
+	<operation name="updateStatusByGmtLive">
+		<extraparams>
+			<param name="status" javatype="java.lang.String"/>
+			<param name="seconds" javatype="java.lang.Integer"/>
+		</extraparams>
+		<sql>
+			update gtc_mail_send_client set gmt_modified=now()
+		</sql>
+		<sqlmap>
+			<![CDATA[
+			update gtc_mail_send_client set
+			gmt_modified=now(),status=#status#
+			where
+			gmt_live &lt;=
+			(now()-#seconds#/24/3600)
+			]]>
+		</sqlmap>
+	</operation>
+
+	<!-- 更新超时的客户端为DEAD -->
+	<operation name="updateToDeadByTimeout">
+		<extraparams>
+			<param name="timeoutSeconds" javatype="int"/>
+		</extraparams>
+		<sql>
+			update gtc_mail_send_client set gmt_modified=now(),status='DEAD'
+		</sql>
+		<sqlmap>
+			<![CDATA[
+			${cdata-start}
+			update gtc_mail_send_client set gmt_modified=now(),status='DEAD'
+			where gmt_live <= now()-(#timeoutSeconds#/3600/24)
+			${cdata-end}
+			]]>
+		</sqlmap>
+	</operation>
+
+	<operation name="updateGmtLiveByClientId">
+		<sql>
+			update gtc_mail_send_client set
+			gmt_modified=now(),gmt_live=sydate,status='LIVE' where client_id=?
+		</sql>
+	</operation>
+
+	<operation name="selectById">
+		<sql>
+			select id, client_id, gmt_create, gmt_modified,
+			client_ip,client_host,
+			gmt_live,
+			current_amount,status from
+			gtc_mail_send_client where
+			id=?
+		</sql>
+	</operation>
+
+	<operation name="selectIdCurrentAmountByStatus" multiplicity="many" resultclass="java.util.HashMap">
+		<sql>
+			select id,current_amount from
+			gtc_mail_send_client where
+			status=?
+		</sql>
+	</operation>
+</table>

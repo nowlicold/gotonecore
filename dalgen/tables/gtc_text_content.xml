@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<table sqlname="gtc_text_content" dummypk="owner_id">
+	<column name="content" javatype="java.lang.String"/>
+	<column name="deleted" javatype="boolean"/>
+	<operation name="insert">
+		<sql>
+			<![CDATA[
+				 insert into gtc_text_content
+  (owner_id, owner_type, content, gmt_create, gmt_modified,deleted)
+values
+  (?, ?, ?, now(), now(),?)
+			]]>
+		</sql>
+	</operation>
+	<operation name="getByOwnerIdAndOwnerType">
+		<sql>
+			<![CDATA[
+				select owner_id, owner_type, content, gmt_create, gmt_modified,deleted from gtc_text_content
+				where owner_id=? and owner_type=?
+			]]>
+		</sql>
+	</operation>
+	<operation name="getGmtModifiedByOwnerIdAndOwnerType">
+		<sql>
+			<![CDATA[
+				select gmt_modified from gtc_text_content
+				where owner_id=? and owner_type=?
+			]]>
+		</sql>
+	</operation>
+	<operation name="selectAll" multiplicity="many">
+		<sql>
+			<![CDATA[
+				select owner_id, owner_type, content, gmt_create, gmt_modified,deleted from gtc_text_content 
+			]]>
+		</sql>
+	</operation>
+
+	<operation name="updateContent">
+		<sql>
+			<![CDATA[
+				 update   gtc_text_content
+  set  content=?, gmt_modified=now()
+where owner_id=? and owner_type=?
+			]]>
+		</sql>
+	</operation>
+
+	<operation name="selectMaxGmtModified">
+		<sql>
+			<![CDATA[
+				 select max(gmt_modified) from gtc_text_content
+			]]>
+		</sql>
+	</operation>
+
+	<operation name="selectGreaterThanModifiedDate" multiplicity="many">
+		<sql>
+			select owner_id, owner_type, content, gmt_create,
+			gmt_modified,deleted from gtc_text_content where
+			gmt_modified =?
+		</sql>
+		<sqlmap>
+			<![CDATA[
+			${cdata-start}
+			select owner_id, owner_type, content, gmt_create, gmt_modified,deleted from gtc_text_content  where
+			gmt_modified >= #gmtModified#
+			${cdata-end}
+			]]>
+		</sqlmap>
+	</operation>
+
+	<operation name="updateDeleted">
+		<sql>
+			<![CDATA[
+				update gtc_text_content set deleted='1'
+where owner_id=? and owner_type=?
+			]]>
+		</sql>
+	</operation>
+</table>

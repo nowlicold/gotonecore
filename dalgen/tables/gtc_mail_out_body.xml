@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<table sqlname="gtc_mail_out_body">
+	<column name="mail_body" javatype="java.lang.String"/>
+	<operation name="insert">
+		<sql>
+			insert into gtc_mail_out_body
+			(id, mail_body, gmt_create)
+			values
+			(?, ?, now())
+		</sql>
+	</operation>
+	<operation name="selectById">
+		<sql>
+			select id, mail_body, gmt_create from
+			gtc_mail_out_body where id=?
+		</sql>
+	</operation>
+	
+	<operation name="deleteMailBodyById" paramtype="primitive" multiplicity="many">
+		<sql> 
+			<![CDATA[
+				delete gtc_mail_out_body where id=?
+			]]>
+		</sql>
+	</operation>
+</table>

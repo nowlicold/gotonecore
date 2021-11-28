@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<table sqlname="gtc_sms_config_in_channel">
+	<operation name="insert">
+		<sql>
+			insert into gtc_sms_config_in_channel
+			(id,sms_config_id,content,channel,gmt_create,gmt_modified,enabled,properties)
+			values
+			(?,?,?,?,now(),now(),?,?)
+		</sql>
+	</operation>
+	<operation name="selectAll" multiplicity="many">
+		<sql>
+			select
+			id,sms_config_id,content,channel,gmt_create,gmt_modified,enabled,properties
+			from
+			gtc_sms_config_in_channel
+		</sql>
+	</operation>
+	<operation name="selectByMaxGmtModified" multiplicity="many">
+		<extraparams>
+			<param name="tModified" javatype="java.util.Date"/>
+		</extraparams>
+		<sql>
+			select
+			id,sms_config_id,content,channel,gmt_create,gmt_modified,enabled,properties
+			from
+			gtc_sms_config_in_channel where
+			1=0
+		</sql>
+		<sqlmap>
+			<![CDATA[
+			select id,sms_config_id,content,channel,gmt_create,gmt_modified,enabled,properties
+			from
+			gtc_sms_config_in_channel where gmt_modified &gt; #gtModified#
+			]]>
+		</sqlmap>
+	</operation>
+</table>
