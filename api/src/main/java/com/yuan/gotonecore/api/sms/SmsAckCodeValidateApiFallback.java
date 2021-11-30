@@ -1,16 +1,10 @@
 package com.yuan.gotonecore.api.sms;
 
 import com.bench.common.model.JsonResult;
-import com.yuan.gotonecore.api.user.UserCreateApi;
-import com.yuan.gotonecore.api.user.request.UserCreateRequest;
-import com.yuan.gotonecore.api.user.result.UserCreateResult;
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cloud.openfeign.FeignClient;
-
 import com.yuan.gotonecore.api.sms.request.SmsAckCodeValidateRequest;
 import com.yuan.gotonecore.api.sms.result.SmsAckCodeValidateResult;
-import com.yuan.gotonecore.api.user.UserQueryApiFallback;
 import org.springframework.stereotype.Component;
 
 /**

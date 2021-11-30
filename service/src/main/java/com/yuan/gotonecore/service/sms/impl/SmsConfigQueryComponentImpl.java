@@ -12,11 +12,9 @@ import com.yuan.gotonecore.api.sms.model.SmsConfig;
 import com.yuan.gotonecore.api.sms.request.SmsConfigQueryRequest;
 import com.yuan.gotonecore.api.sms.result.SmsConfigPageQueryResult;
 import com.yuan.gotonecore.repository.entity.SmsConfigDO;
-import com.yuan.gotonecore.repository.entity.UserDO;
 import com.yuan.gotonecore.repository.mapper.SmsConfigMapper;
 import com.yuan.gotonecore.service.sms.SmsConfigConvert;
 import com.yuan.gotonecore.service.sms.SmsConfigQueryComponent;
-import com.yuan.gotonecore.service.user.UserConvert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

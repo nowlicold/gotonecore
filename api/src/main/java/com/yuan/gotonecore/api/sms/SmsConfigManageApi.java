@@ -7,7 +7,6 @@ import com.bench.common.model.JsonResult;
 import com.yuan.gotonecore.api.sms.request.SmsConfigUpdateRequest;
 import com.yuan.gotonecore.api.sms.request.SmsConfigUpdateSendChannelsRequest;
 import com.yuan.gotonecore.api.sms.result.SmsConfigOperateResult;
-import com.yuan.gotonecore.api.user.UserQueryApiFallback;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 

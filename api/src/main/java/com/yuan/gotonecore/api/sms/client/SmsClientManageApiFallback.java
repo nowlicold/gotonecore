@@ -5,10 +5,6 @@ import com.yuan.gotonecore.api.sms.client.result.SmsClienLoginResult;
 import org.springframework.stereotype.Component;
 
 import com.bench.common.model.JsonResult;
-import com.yuan.gotonecore.api.user.UserCreateApi;
-import com.yuan.gotonecore.api.user.request.UserCreateRequest;
-import com.yuan.gotonecore.api.user.result.UserCreateResult;
-
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
 

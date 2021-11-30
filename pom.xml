@@ -212,13 +212,20 @@
                 <updatePolicy>always</updatePolicy>
             </snapshots>
         </repository>
-        <repository>
-            <id>maven-cognitiveservices-speech</id>
-            <name>Microsoft Cognitive Services Speech Maven Repository</name>
-            <url>https://csspeechstorage.blob.core.windows.net/maven/</url>
-        </repository>
     </repositories>
 
+    <distributionManagement>
+        <repository>
+            <id>yuan-nexus-releases</id>
+            <name>yuan-nexus-releases</name>
+            <url>http://35.76.186.9:8081/repository/maven-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>yuan-nexus-snapshots</id>
+            <name>yuan-nexus-snapshots</name>
+            <url>http://35.76.186.9:8081/repository/maven-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
 
     <build>
         <plugins>

@@ -5,7 +5,6 @@ import com.yuan.gotonecore.api.sms.request.SmsBatchSendRequest;
 import com.yuan.gotonecore.api.sms.request.SmsResendRequest;
 import com.yuan.gotonecore.api.sms.request.SmsSendRequest;
 import com.yuan.gotonecore.api.sms.result.SmsSendResult;
-import com.yuan.gotonecore.api.user.UserQueryApiFallback;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 

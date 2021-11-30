@@ -1,12 +1,7 @@
 package com.yuan.gotonecore.repository.service;
-
-import com.bench.common.model.PageVO;
 import com.yuan.gotonecore.GotonecoreApplication;
-import com.yuan.gotonecore.api.model.User;
 import com.yuan.gotonecore.api.request.MailSendRequest;
 import com.yuan.gotonecore.api.result.GotoneCoreServiceResult;
-import com.yuan.gotonecore.api.user.enums.UserOrderByEnum;
-import com.yuan.gotonecore.api.user.request.UserSearchRequest;
 import com.yuan.gotonecore.common.enums.GotoneChannelEnum;
 import com.yuan.gotonecore.common.enums.MailBodyPatternTypeEnum;
 import com.yuan.gotonecore.service.mail.SendMailService;
