@@ -22,8 +22,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 })
 */
 @SpringBootApplication(scanBasePackages = {
-        "com.bench",
-        "com.yuan"
+        "com.yuan",
+        "com.bench"
 })
 @EnableScheduling
 @EnableBinding({PushMessageChannel.class, RecvMessageChannel.class})

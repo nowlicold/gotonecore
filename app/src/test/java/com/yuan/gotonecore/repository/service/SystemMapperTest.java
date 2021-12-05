@@ -1,7 +1,7 @@
 package com.yuan.gotonecore.repository.service;
 
+import com.bench.repository.mapper.SystemMapper;
 import com.yuan.gotonecore.GotonecoreApplication;
-import com.yuan.gotonecore.repository.mapper.SystemMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;

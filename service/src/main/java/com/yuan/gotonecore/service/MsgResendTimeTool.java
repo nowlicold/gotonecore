@@ -5,7 +5,7 @@
 package com.yuan.gotonecore.service;
 
 import com.bench.lang.base.date.utils.DateUtils;
-import com.yuan.gotonecore.repository.mapper.SystemMapper;
+import com.bench.repository.mapper.SystemMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
