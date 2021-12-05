@@ -5,9 +5,11 @@
 package com.yuan.gotonecore.service;
 
 import com.bench.lang.base.date.utils.DateUtils;
+import com.yuan.gotonecore.repository.mapper.SystemMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.Date;
 
 /**
@@ -23,6 +25,8 @@ public class MsgResendTimeTool {
 	/** 消息重发策略 */
 	@Autowired
 	private com.yuan.gotonecore.service.MessageRetryPolicy messageRetryPolicy;
+	@Resource
+	private SystemMapper systemMapper;
 
 	/**
 	 * 得到下次发送时间
@@ -33,7 +37,7 @@ public class MsgResendTimeTool {
 	public Date getGmtResend(int sendtime) {
 		long[] retryIntervals = messageRetryPolicy.getOtherRetryIntervals();
 		long retryInterval = retryIntervals[(int) sendtime];
-		return DateUtils.addSeconds(new Date(), retryInterval);
+		return DateUtils.addSeconds(systemMapper.getCurrentDate(), retryInterval);
 	}
 
 }
