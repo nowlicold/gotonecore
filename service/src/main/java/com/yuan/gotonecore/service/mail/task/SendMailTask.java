@@ -4,14 +4,17 @@
  */
 package com.yuan.gotonecore.service.mail.task;
 
+import com.bench.lang.base.json.jackson.JacksonUtils;
 import com.bench.lang.base.string.utils.StringUtils;
 import com.bench.xtask.BenchDistributeTask;
 import com.bench.xtask.annotation.DistributeTask;
+import com.yuan.gotonecore.api.result.GotoneCoreServiceResult;
 import com.yuan.gotonecore.common.enums.GotoneChannelEnum;
 import com.yuan.gotonecore.common.enums.MailBodyPatternTypeEnum;
 import com.yuan.gotonecore.repository.entity.MailOutDO;
 import com.yuan.gotonecore.repository.mapper.MailOutMapper;
 import com.yuan.gotonecore.service.mail.MailOperationComponent;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -25,6 +28,7 @@ import java.util.List;
  */
 @DistributeTask(cronExpression = "0/5 * * * * ? *")
 @Component
+@Slf4j
 public class SendMailTask implements BenchDistributeTask {
 
 	@Autowired
@@ -41,7 +45,8 @@ public class SendMailTask implements BenchDistributeTask {
 			if (StringUtils.equals(mailOutDO.getMailBodyPattern(), MailBodyPatternTypeEnum.BY_CONTENT.name())) {
 				mailOperationComponent.executeSendNow(id);
 			} else {
-				mailOperationComponent.executeSend(id);
+				GotoneCoreServiceResult result = mailOperationComponent.executeSend(id);
+				log.error("邮件发送日志打印result={}", JacksonUtils.toJson(result));
 			}
 		}
 	}

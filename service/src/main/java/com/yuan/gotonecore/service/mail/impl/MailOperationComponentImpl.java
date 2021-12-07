@@ -104,10 +104,12 @@ public class MailOperationComponentImpl implements MailOperationComponent {
 				}
 				// 如果记录已经锁定则忽略之
 				catch (Exception ce) {
+					log.error("当前需要处理的数据已经从数据库移除，或被别的服务器已经锁定捞取：id={}",id);
 					throw new GotoneCoreException(ErrorCodeEnum.MAIL_OUT_LOCK_FAILED.errorCode(), "当前需要处理的数据已经从数据库移除，或被别的服务器已经锁定捞取：id=" + id);
 				}
 				// 异常处理
 				if (mailOutDO == null) {
+					log.error("当前需要处理的数据已经从数据库移除，或被别的服务器已经锁定捞取：id={}",id);
 					throw new GotoneCoreException(ErrorCodeEnum.MAIL_OUT_NOT_EXISTS.errorCode(), "当前需要处理的数据已经从数据库移除，或被别的服务器已经锁定捞取：id=" + id);
 				}
 
